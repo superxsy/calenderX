@@ -1,3 +1,6 @@
+The following readme was written by Claude, it looks very advanced but is actually about a very simple thing.
+
+
 # 📅 Vue 日历任务管理系统
 
 一个基于 Vue 3 + Vite 构建的现代化日历任务管理应用，支持任务创建、编辑、删除和多视图展示。
