@@ -40,7 +40,15 @@
           <div class="calendar-day" :class="{ 'is-empty': !day.day }" v-for="(day, index) in monthDays" :key="index" @click="day.day ? openTaskModal(null, day.date) : null">
           <div class="day-number">{{ day.day }}</div>
           <div class="tasks">
-            <div class="task" v-for="task in day.tasks" :key="task.id" :style="{ backgroundColor: task.tagColor || '#3498db' }" :class="{ 'completed': task.completed }">
+            <div class="task" v-for="task in day.tasks" :key="task.id" 
+                  :style="{ 
+                    backgroundColor: task.tagColor || '#3498db', 
+                    color: getTextColor(task.tagColor || '#3498db'),
+                    fontWeight: getFontWeight(task.tagColor || '#3498db'),
+                    fontSize: getFontSize(task.tagColor || '#3498db'),
+                    textShadow: getTextShadow(task.tagColor || '#3498db')
+                  }" 
+                  :class="{ 'completed': task.completed }">
                <input 
                  type="checkbox" 
                  v-model="task.completed" 
@@ -57,7 +65,15 @@
         <div class="calendar-day" v-for="day in weekDays" :key="day.date" @click="openTaskModal(null, day.date)">
           <div class="day-number">{{ day.day }}</div>
           <div class="tasks">
-            <div class="task" v-for="task in day.tasks" :key="task.id" :style="{ backgroundColor: task.tagColor || '#3498db' }" :class="{ 'completed': task.completed }">
+            <div class="task" v-for="task in day.tasks" :key="task.id" 
+                  :style="{ 
+                    backgroundColor: task.tagColor || '#3498db', 
+                    color: getTextColor(task.tagColor || '#3498db'),
+                    fontWeight: getFontWeight(task.tagColor || '#3498db'),
+                    fontSize: getFontSize(task.tagColor || '#3498db'),
+                    textShadow: getTextShadow(task.tagColor || '#3498db')
+                  }" 
+                  :class="{ 'completed': task.completed }">
                <input 
                  type="checkbox" 
                  v-model="task.completed" 
@@ -83,7 +99,14 @@
             <span class="task-status" :title="task.status">{{ statusSymbols[task.status] }}</span>
             <span @click="openTaskModal(task)" class="task-title">{{ task.title }}</span>
             <span class="task-date">{{ task.date }}</span>
-            <span v-if="task.tag" class="task-tag" :style="{ backgroundColor: task.tagColor || '#3498db' }">{{ task.tag }}</span>
+            <span v-if="task.tag" class="task-tag" 
+                   :style="{ 
+                     backgroundColor: task.tagColor || '#3498db', 
+                     color: getTextColor(task.tagColor || '#3498db'),
+                     fontWeight: getFontWeight(task.tagColor || '#3498db'),
+                     fontSize: getFontSize(task.tagColor || '#3498db'),
+                     textShadow: getTextShadow(task.tagColor || '#3498db')
+                   }">{{ task.tag }}</span>
           </div>
         </div>
       </div>
@@ -148,12 +171,50 @@
             
             <div class="form-group">
               <label>任务标签:</label>
-              <input type="text" v-model="taskForm.customTagName" placeholder="输入标签名称（可选）">
+              <input type="text" v-model="taskForm.customTagName" placeholder="输入标签名称（可选）" @focus="showTagColorOptions = true">
             </div>
             
-            <div v-if="taskForm.customTagName" class="form-group">
+            <div v-if="showTagColorOptions" class="form-group">
               <label>标签颜色:</label>
-              <input type="color" v-model="taskForm.customTagColor">
+              <div class="color-selection">
+                <!-- 预设颜色选项 -->
+                <div class="color-presets">
+                  <label class="color-section-label">推荐颜色:</label>
+                  <div class="color-preset-grid">
+                    <div 
+                      v-for="preset in currentPresetColors" 
+                      :key="preset.color"
+                      class="color-option preset-color"
+                      :class="{ active: taskForm.customTagColor === preset.color }"
+                      :style="{ backgroundColor: preset.color }"
+                      @click="taskForm.customTagColor = preset.color"
+                      :title="`${preset.name} (${preset.color})`"
+                    ></div>
+                  </div>
+                </div>
+                
+                <!-- 历史颜色选项 -->
+                <div v-if="usedColors.length > 0" class="color-history">
+                  <label class="color-section-label">最近使用:</label>
+                  <div class="color-history-grid">
+                    <div 
+                      v-for="color in usedColors" 
+                      :key="color"
+                      class="color-option history-color"
+                      :class="{ active: taskForm.customTagColor === color }"
+                      :style="{ backgroundColor: color }"
+                      @click="taskForm.customTagColor = color"
+                      :title="color"
+                    ></div>
+                  </div>
+                </div>
+                
+                <!-- 自定义颜色选择器 -->
+                <div class="custom-color">
+                  <label class="color-section-label">自定义颜色:</label>
+                  <input type="color" v-model="taskForm.customTagColor" class="color-picker">
+                </div>
+              </div>
             </div>
             
             <div class="form-group">
@@ -292,12 +353,40 @@ export default {
         completed: '✔',
         overdue: '⚠'
       },
-      taskTags: {}
+      taskTags: {},
+      usedColors: [], // 存储用户使用过的颜色
+      showTagColorOptions: false, // 控制标签颜色选项的显示
+      // 主题配置 - 为未来主题功能预留
+      currentTheme: 'default',
+      themes: {
+        default: {
+          name: '默认主题',
+          presetColors: [
+            { name: '蓝色', color: '#3498db', category: 'primary' },
+            { name: '绿色', color: '#2ecc71', category: 'success' },
+            { name: '橙色', color: '#f39c12', category: 'warning' },
+            { name: '红色', color: '#e74c3c', category: 'danger' },
+            { name: '紫色', color: '#9b59b6', category: 'info' },
+            { name: '青色', color: '#1abc9c', category: 'teal' },
+            { name: '深蓝', color: '#34495e', category: 'dark' },
+            { name: '灰色', color: '#95a5a6', category: 'secondary' },
+            { name: '粉色', color: '#e91e63', category: 'pink' },
+            { name: '靛蓝', color: '#6c5ce7', category: 'indigo' },
+            { name: '黄绿', color: '#a4de6c', category: 'lime' },
+            { name: '深橙', color: '#fd79a8', category: 'coral' }
+          ]
+        }
+        // 未来可以添加更多主题，如 dark、colorful 等
+      }
     };
   },
   computed: {
     currentDateDisplay() {
       return this.currentDate.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long' });
+    },
+    // 获取当前主题的预设颜色
+    currentPresetColors() {
+      return this.themes[this.currentTheme]?.presetColors || [];
     },
     filteredTasks() {
       if (!this.searchTerm) {
@@ -319,6 +408,7 @@ export default {
         const localTasks = localStorage.getItem('calendar-tasks');
         if (localTasks) {
           this.tasks = JSON.parse(localTasks);
+          this.loadUsedColors();
           this.render();
           return;
         }
@@ -329,6 +419,8 @@ export default {
           throw new Error('Network response was not ok');
         }
         this.tasks = await response.json();
+        // 从现有任务中提取颜色
+        this.extractColorsFromTasks();
         // 首次加载后保存到本地存储
         await this.saveTasks();
         this.render();
@@ -427,11 +519,14 @@ export default {
           repeat: task.repeat || 'none',
           status: task.status || 'pending'
         };
+        // 如果已有标签名称，显示颜色选项
+        this.showTagColorOptions = !!(task.tag);
         // 如果是重复任务，设置默认编辑选项
         this.editRecurringOption = task.recurring ? 'single' : 'single';
       } else {
         // 新建模式
         this.resetTaskForm();
+        this.showTagColorOptions = false;
         this.editRecurringOption = 'single';
         if (date) {
           this.taskForm.date = date;
@@ -450,6 +545,7 @@ export default {
       this.deleteRecurringOption = 'single';
       this.showDeleteConfirmModal = false;
       this.deleteConfirmMessage = '';
+      this.showTagColorOptions = false;
       this.resetTaskForm();
     },
     resetTaskForm() {
@@ -552,6 +648,11 @@ export default {
           this.tasks.push(...newTasks);
         }
 
+        // 记录使用的颜色
+        if (taskData.tag && taskData.tagColor) {
+          this.addToUsedColors(taskData.tagColor);
+        }
+
         // 保存到本地存储或服务器
         await this.saveTasks();
         this.render();
@@ -636,6 +737,8 @@ export default {
       // 这里可以实现保存到服务器的逻辑
       // 目前先保存到本地存储
       localStorage.setItem('calendar-tasks', JSON.stringify(this.tasks));
+      // 同时保存历史颜色
+      localStorage.setItem('used-colors', JSON.stringify(this.usedColors));
     },
     async updateTaskStatus(task) {
       // 更新任务状态
@@ -846,9 +949,188 @@ export default {
       if (this.viewMode !== 'list') {
         this.switchView('list');
       }
+    },
+    // 颜色管理方法
+    addToUsedColors(color) {
+      if (!color || color === '#3498db') return; // 跳过默认颜色
+      
+      // 如果颜色已存在，先移除它
+      const index = this.usedColors.indexOf(color);
+      if (index > -1) {
+        this.usedColors.splice(index, 1);
+      }
+      
+      // 将颜色添加到数组开头（最近使用的在前面）
+      this.usedColors.unshift(color);
+      
+      // 限制历史颜色数量为10个
+      if (this.usedColors.length > 10) {
+        this.usedColors = this.usedColors.slice(0, 10);
+      }
+    },
+    loadUsedColors() {
+      try {
+        const savedColors = localStorage.getItem('used-colors');
+        if (savedColors) {
+          this.usedColors = JSON.parse(savedColors);
+        }
+      } catch (error) {
+        console.error('加载历史颜色失败:', error);
+        this.usedColors = [];
+      }
+    },
+    extractColorsFromTasks() {
+      // 从现有任务中提取所有使用过的颜色
+      const colors = new Set();
+      this.tasks.forEach(task => {
+        if (task.tagColor && task.tagColor !== '#3498db') {
+          colors.add(task.tagColor);
+        }
+      });
+      this.usedColors = Array.from(colors).slice(0, 10);
+    },
+    // 智能文字颜色计算方法
+    getTextColor(backgroundColor) {
+      if (!backgroundColor) return '#000000';
+      
+      // 移除 # 号
+      let hex = backgroundColor.replace('#', '');
+      
+      // 处理3位十六进制颜色（如 #000 -> #000000）
+      if (hex.length === 3) {
+        hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+      }
+      
+      // 确保是6位十六进制
+      if (hex.length !== 6) {
+        return '#000000'; // 默认返回黑色
+      }
+      
+      // 将十六进制转换为 RGB
+      const r = parseInt(hex.substr(0, 2), 16);
+      const g = parseInt(hex.substr(2, 2), 16);
+      const b = parseInt(hex.substr(4, 2), 16);
+      
+      // 计算相对亮度 (使用 WCAG 标准)
+      // 公式: (0.299 * R + 0.587 * G + 0.114 * B)
+      const brightness = (0.299 * r + 0.587 * g + 0.114 * b);
+      
+      // 如果亮度大于 128，使用黑色文字；否则使用白色文字
+      return brightness > 128 ? '#000000' : '#ffffff';
+    },
+    
+    // 根据背景颜色获取合适的字体粗细
+    getFontWeight(backgroundColor) {
+      if (!backgroundColor) return 'normal';
+      
+      // 移除 # 号并确保是6位十六进制
+      let hex = backgroundColor.replace('#', '');
+      if (hex.length === 3) {
+        hex = hex.split('').map(char => char + char).join('');
+      }
+      
+      if (hex.length !== 6 || !/^[0-9A-Fa-f]+$/.test(hex)) {
+        return 'normal';
+      }
+      
+      // 转换为 RGB
+      const r = parseInt(hex.substr(0, 2), 16);
+      const g = parseInt(hex.substr(2, 2), 16);
+      const b = parseInt(hex.substr(4, 2), 16);
+      
+      // 计算亮度
+      const brightness = (0.299 * r + 0.587 * g + 0.114 * b);
+      
+      // 浅色背景使用更粗的字体，深色背景使用较细的字体
+      return brightness > 128 ? '900' : '100';
+    },
+    
+    // 根据背景颜色获取字体大小调整
+    getFontSize(backgroundColor) {
+      if (!backgroundColor) return '1em';
+      
+      // 移除 # 号并确保是6位十六进制
+      let hex = backgroundColor.replace('#', '');
+      if (hex.length === 3) {
+        hex = hex.split('').map(char => char + char).join('');
+      }
+      
+      if (hex.length !== 6 || !/^[0-9A-Fa-f]+$/.test(hex)) {
+        return '1em';
+      }
+      
+      // 转换为 RGB
+      const r = parseInt(hex.substr(0, 2), 16);
+      const g = parseInt(hex.substr(2, 2), 16);
+      const b = parseInt(hex.substr(4, 2), 16);
+      
+      // 计算亮度
+      const brightness = (0.299 * r + 0.587 * g + 0.114 * b);
+      
+      // 浅色背景稍微增大字体，深色背景保持正常
+      return brightness > 128 ? '0.9em' : '0.9em';
+    },
+    
+    // 根据背景颜色获取文字阴影效果
+    getTextShadow(backgroundColor) {
+      if (!backgroundColor) return 'none';
+      
+      // 移除 # 号并确保是6位十六进制
+      let hex = backgroundColor.replace('#', '');
+      if (hex.length === 3) {
+        hex = hex.split('').map(char => char + char).join('');
+      }
+      
+      if (hex.length !== 6 || !/^[0-9A-Fa-f]+$/.test(hex)) {
+        return 'none';
+      }
+      
+      // 转换为 RGB
+      const r = parseInt(hex.substr(0, 2), 16);
+      const g = parseInt(hex.substr(2, 2), 16);
+      const b = parseInt(hex.substr(4, 2), 16);
+      
+      // 计算亮度
+      const brightness = (0.299 * r + 0.587 * g + 0.114 * b);
+      
+      // 浅色背景给黑字添加轻微阴影增强视觉效果
+      return brightness > 128 ? '0 0 1px rgba(0,0,0,0.3)' : 'none';
+    },
+    
+    // 主题管理方法 - 为未来功能预留
+    switchTheme(themeName) {
+      if (this.themes[themeName]) {
+        this.currentTheme = themeName;
+        // 保存主题选择到本地存储
+        localStorage.setItem('selected-theme', themeName);
+        // 未来可以在这里添加更多主题切换逻辑
+        console.log(`主题已切换到: ${this.themes[themeName].name}`);
+      }
+    },
+    
+    loadThemeSettings() {
+      try {
+        const savedTheme = localStorage.getItem('selected-theme');
+        if (savedTheme && this.themes[savedTheme]) {
+          this.currentTheme = savedTheme;
+        }
+      } catch (error) {
+        console.error('加载主题设置失败:', error);
+        this.currentTheme = 'default';
+      }
+    },
+    
+    // 获取主题相关的颜色建议
+    getColorSuggestions(category = null) {
+      const presets = this.currentPresetColors;
+      if (category) {
+        return presets.filter(preset => preset.category === category);
+      }
+      return presets;
     }
   },
   mounted() {
+    this.loadThemeSettings();
     this.loadTasks();
   }
 };
