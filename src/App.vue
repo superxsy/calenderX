@@ -365,6 +365,7 @@ export default {
     return {
       showBackupModal: false,
       autoBackup: false,
+      autoBackupInterval: null,
       backupHistory: [],
       lastBackupTime: '无',
       currentDate: new Date(),
@@ -1241,6 +1242,9 @@ export default {
     this.loadBackupHistory();
     this.loadThemeSettings();
     this.loadTasks();
+  },
+  beforeUnmount() {
+    clearInterval(this.autoBackupInterval);
   }
 };
 </script>
