@@ -17,7 +17,7 @@
 核心文件:
 - src/App.vue: 主应用组件，包含所有核心功能逻辑
 - src/style.css: 全局样式文件
-- calendar-tasks.json: 任务数据文件
+- public/calendar-tasks.json: 任务数据文件
 - DEVELOPMENT_GUIDE.md: 详细的开发文档
 
 备用文件:
