@@ -18,13 +18,6 @@ describe('App.vue', () => {
   let wrapper
 
   beforeEach(() => {
-    // 模拟fetch API
-    global.fetch = vi.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve(mockTasks)
-      })
-    )
 
     wrapper = mount(App)
   })
