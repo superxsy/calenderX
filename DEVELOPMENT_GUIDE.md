@@ -21,7 +21,7 @@ src/
 ├── style.css        # 全局样式
 script.js            # 独立的JavaScript实现（备用）
 styles.css           # 独立样式文件（备用）
-calendar-tasks.json  # 任务数据文件
+public/calendar-tasks.json  # 任务数据文件
 ```
 
 ## 🚀 核心功能特性
