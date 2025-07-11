@@ -592,7 +592,7 @@ export default {
         // 如果已有标签名称，显示颜色选项
         this.showTagColorOptions = !!(task.tag);
         // 如果是重复任务，设置默认编辑选项
-        this.editRecurringOption = task.recurring ? 'single' : 'single';
+        this.editRecurringOption = 'single';
       } else {
         // 新建模式
         this.resetTaskForm();
