@@ -151,7 +151,7 @@
             </div>
 
             <div class="form-actions">
-              <button @click="manualBackup" class="btn-save">立即备份</button>
+              <button type="button" @click="manualBackup" class="btn-save">立即备份</button>
             </div>
           </form>
         </div>
@@ -826,6 +826,7 @@ export default {
       this.backupHistory.unshift(backup);
       this.lastBackupTime = backup.time;
       this.saveBackupHistory();
+      this.showMessage('success', '备份成功', `已成功备份 ${this.tasks.length} 个任务`);
     },
     restoreBackup(index) {
       const backup = this.backupHistory[index];

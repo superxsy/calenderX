@@ -138,6 +138,23 @@ body {
     margin-left: 10px;
 }
 
+.backup-btn {
+    background: #9b59b6;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.backup-btn:hover {
+    background: #8e44ad;
+    transform: translateY(-1px);
+}
+
 .export-btn, .import-btn {
     background: #27ae60;
     color: white;
