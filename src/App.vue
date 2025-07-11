@@ -1175,9 +1175,9 @@ export default {
       
       // 计算亮度
       const brightness = (0.299 * r + 0.587 * g + 0.114 * b);
-      
+
       // 浅色背景稍微增大字体，深色背景保持正常
-      return brightness > 128 ? '0.9em' : '0.9em';
+      return brightness > 128 ? '1em' : '0.9em';
     },
     
     // 根据背景颜色获取文字阴影效果
