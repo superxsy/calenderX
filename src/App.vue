@@ -1213,7 +1213,6 @@ export default {
         // 保存主题选择到本地存储
         localStorage.setItem('selected-theme', themeName);
         // 未来可以在这里添加更多主题切换逻辑
-        console.log(`主题已切换到: ${this.themes[themeName].name}`);
       }
     },
     
