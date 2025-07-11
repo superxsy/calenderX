@@ -4,7 +4,7 @@
       <!-- 头部 -->
       <header class="header">
         <div class="header-left">
-          <h1>日历任务</h1>
+          <h1>日历任务管理器</h1>
         </div>
         <div class="header-center">
           <button @click="navigate(-1)" class="nav-btn">&#9664;</button>

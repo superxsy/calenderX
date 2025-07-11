@@ -20,5 +20,6 @@
     "vitest": "^1.0.0",
     "@vue/test-utils": "^2.4.0",
     "jsdom": "^23.0.0"
-  }
+  },
+  "license": "MIT"
 }
