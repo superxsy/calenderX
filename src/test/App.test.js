@@ -29,8 +29,10 @@ describe('App.vue', () => {
     wrapper = mount(App)
   })
 
+  const appTitle = '日历任务管理器'
+
   it('应该正确渲染应用标题', () => {
-    expect(wrapper.find('h1').text()).toBe('日历任务管理器')
+    expect(wrapper.find('h1').text()).toBe(appTitle)
   })
 
   it('应该包含视图切换按钮', () => {
