@@ -718,27 +718,7 @@ body {
     border-bottom: 1px solid #ecf0f1;
 }
 
-.modal-header h2 {
-    color: #2c3e50;
-    font-size: 20px;
-}
-
-.close {
-    color: #aaa;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: color 0.3s ease;
-}
-
-.close:hover {
-    color: #e74c3c;
-}
-
-/* 表单样式 */
-#taskForm {
-    padding: 30px;
-}
+/* 备份管理样式已移至 src/style.css 中统一管理 */
 
 .form-group {
     margin-bottom: 20px;
@@ -769,40 +749,7 @@ body {
     border-color: #3498db;
 }
 
-.form-actions {
-    display: flex;
-    gap: 15px;
-    justify-content: flex-end;
-    margin-top: 30px;
-}
-
-.btn-cancel,
-.btn-submit {
-    padding: 12px 24px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.btn-cancel {
-    background: #95a5a6;
-    color: white;
-}
-
-.btn-cancel:hover {
-    background: #7f8c8d;
-}
-
-.btn-submit {
-    background: #27ae60;
-    color: white;
-}
-
-.btn-submit:hover {
-    background: #229954;
-}
+/* 按钮样式已移至 src/style.css 中统一管理 */
 
 /* 动画 */
 @keyframes fadeIn {
@@ -918,6 +865,8 @@ body {
     padding: 40px;
     font-style: italic;
 }
+
+/* 备份管理样式已移至 src/style.css 中统一管理 */
 
 /* 响应式设计 */
 @media (max-width: 768px) {

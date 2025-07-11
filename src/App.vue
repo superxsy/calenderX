@@ -22,6 +22,7 @@
             <button @click="exportTasks" class="export-btn">导出数据</button>
             <input type="file" ref="importFile" @change="importTasks" accept=".json" style="display: none;">
             <button @click="$refs.importFile.click()" class="import-btn">导入数据</button>
+            <button @click="openBackupModal" class="backup-btn">备份管理</button>
           </div>
         </div>
       </header>
@@ -110,6 +111,50 @@
           </div>
         </div>
       </div>
+      </div>
+
+      <!-- 备份管理模态框 -->
+      <div v-if="showBackupModal" class="modal-overlay" @click="closeBackupModal">
+        <div class="modal-content" @click.stop>
+          <div class="modal-header">
+            <h3>备份管理</h3>
+            <button @click="closeBackupModal" class="close-btn">&times;</button>
+          </div>
+          <form class="task-form">
+            <div class="form-group">
+              <label>自动备份设置</label>
+              <label class="setting-label">
+                <input type="checkbox" v-model="autoBackup">
+                开启自动备份（每小时）
+              </label>
+              <p class="last-backup">上次备份时间：{{ lastBackupTime }}</p>
+            </div>
+
+            <div class="form-group">
+              <label>备份历史</label>
+              <div v-if="backupHistory.length === 0" class="no-backups">没有备份记录</div>
+              <div v-else class="backup-list">
+                <div v-for="(backup, index) in backupHistory" :key="index" class="backup-item">
+                  <div class="backup-info">
+                    <div class="backup-date">{{ backup.time }}</div>
+                    <div class="backup-details">
+                      <span class="backup-type" :class="backup.type">{{ backup.type }}</span>
+                      <span>{{ backup.taskCount }}个任务</span>
+                    </div>
+                  </div>
+                  <div class="backup-actions">
+                    <button @click="restoreBackup(index)" class="btn-save">恢复</button>
+              <button @click="deleteBackup(index)" class="btn-delete">删除</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button @click="manualBackup" class="btn-save">立即备份</button>
+            </div>
+          </form>
+        </div>
       </div>
 
       <!-- 任务模态框 -->
@@ -318,6 +363,10 @@
 export default {
   data() {
     return {
+      showBackupModal: false,
+      autoBackup: false,
+      backupHistory: [],
+      lastBackupTime: '无',
       currentDate: new Date(),
       viewMode: 'month', // 'month', 'week', 'list'
       tasks: [],
@@ -399,6 +448,27 @@ export default {
         const tagMatch = task.tag && task.tag.toLowerCase().includes(searchTermLower);
         return titleMatch || descriptionMatch || tagMatch;
       });
+    }
+  },
+  watch: {
+    autoBackup(newVal) {
+      if (newVal) {
+        this.autoBackupInterval = setInterval(() => {
+          const backup = {
+            time: new Date().toLocaleString(),
+            type: 'auto',
+            taskCount: this.tasks.length,
+            data: JSON.parse(JSON.stringify(this.tasks))
+          };
+          this.backupHistory.unshift(backup);
+          if (this.backupHistory.length > 10) { // Keep last 10 auto backups
+            this.backupHistory.pop();
+          }
+          this.saveBackupHistory();
+        }, 3600000); // 1 hour
+      } else {
+        clearInterval(this.autoBackupInterval);
+      }
     }
   },
   methods: {
@@ -739,6 +809,44 @@ export default {
       localStorage.setItem('calendar-tasks', JSON.stringify(this.tasks));
       // 同时保存历史颜色
       localStorage.setItem('used-colors', JSON.stringify(this.usedColors));
+    },
+    openBackupModal() {
+      this.showBackupModal = true;
+    },
+    closeBackupModal() {
+      this.showBackupModal = false;
+    },
+    manualBackup() {
+      const backup = {
+        time: new Date().toLocaleString(),
+        type: 'manual',
+        taskCount: this.tasks.length,
+        data: JSON.parse(JSON.stringify(this.tasks))
+      };
+      this.backupHistory.unshift(backup);
+      this.lastBackupTime = backup.time;
+      this.saveBackupHistory();
+    },
+    restoreBackup(index) {
+      const backup = this.backupHistory[index];
+      this.tasks = JSON.parse(JSON.stringify(backup.data));
+      this.saveTasks();
+      this.closeBackupModal();
+    },
+    deleteBackup(index) {
+      this.backupHistory.splice(index, 1);
+      this.saveBackupHistory();
+    },
+    saveBackupHistory() {
+      localStorage.setItem('backupHistory', JSON.stringify(this.backupHistory));
+    },
+    loadBackupHistory() {
+      const history = localStorage.getItem('backupHistory');
+      if (history) {
+        this.backupHistory = JSON.parse(history);
+        const lastManualBackup = this.backupHistory.find(b => b.type === 'manual');
+        if(lastManualBackup) this.lastBackupTime = lastManualBackup.time;
+      }
     },
     async updateTaskStatus(task) {
       // 更新任务状态
@@ -1130,6 +1238,7 @@ export default {
     }
   },
   mounted() {
+    this.loadBackupHistory();
     this.loadThemeSettings();
     this.loadTasks();
   }

@@ -965,6 +965,78 @@ body {
   background: #17a2b8;
 }
 
+/* 备份管理样式 */
+.backup-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #e1e5e9;
+  transition: background-color 0.2s;
+}
+
+.backup-item:last-child {
+  border-bottom: none;
+}
+
+.backup-item:hover {
+  background-color: #f8f9fa;
+}
+
+.backup-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.backup-date {
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.backup-details {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.backup-type {
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: white;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.backup-type.manual {
+  background-color: #3498db;
+}
+
+.backup-type.auto {
+  background-color: #9b59b6;
+}
+
+.backup-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.backup-actions .btn-save,
+.backup-actions .btn-delete {
+  padding: 8px 16px;
+  font-size: 12px;
+  min-width: 60px;
+}
+
+.no-backups {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6c757d;
+  font-style: italic;
+}
+
 /* 按钮样式 */
 .btn-primary {
   padding: 8px 20px;
