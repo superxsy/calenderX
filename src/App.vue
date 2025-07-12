@@ -6,11 +6,7 @@
         <div class="header-left">
           <h1>日历任务管理器</h1>
         </div>
-        <div class="header-center">
-          <button @click="navigate(-1)" class="nav-btn">&#9664;</button>
-          <h2 class="current-date">{{ currentDateDisplay }}</h2>
-          <button @click="navigate(1)" class="nav-btn">&#9654;</button>
-        </div>
+
         <div class="header-right">
           <div class="view-toggle">
             <button @click="switchView('month')" :class="{ active: viewMode === 'month' }" class="view-btn">月</button>
@@ -57,8 +53,6 @@
           @task-edit="openTaskModal"
           @task-delete="showDeleteConfirm"
           @task-status-change="updateTaskStatus"
-          @search-focus="onSearchFocus"
-          @search-input="onSearchInput"
         />
       </div>
 
@@ -156,17 +150,11 @@ export default {
     }
   },
   computed: {
-    currentDateDisplay() {
-      return this.calendarStore.currentDateDisplay
-    },
     viewMode() {
       return this.calendarStore.viewMode
     }
   },
   methods: {
-    navigate(direction) {
-      this.calendarStore.navigate(direction)
-    },
     switchView(view) {
       this.calendarStore.switchView(view)
     },
@@ -366,35 +354,7 @@ export default {
   font-weight: 600;
 }
 
-.header-center {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
 
-.nav-btn {
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  color: white;
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1.2rem;
-  transition: all 0.3s ease;
-}
-
-.nav-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-1px);
-}
-
-.current-date {
-  margin: 0;
-  font-size: 1.4rem;
-  font-weight: 500;
-  min-width: 200px;
-  text-align: center;
-}
 
 .header-right {
   display: flex;

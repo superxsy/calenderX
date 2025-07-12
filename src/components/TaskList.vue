@@ -1,22 +1,10 @@
 <template>
   <div class="task-list">
-    <!-- 搜索和过滤区域 -->
+    <!-- 过滤和视图切换区域 -->
     <div class="task-list-header">
-      <div class="search-container">
-        <input
-          type="text"
-          v-model="searchQuery"
-          @focus="onSearchFocus"
-          @input="onSearchInput"
-          placeholder="搜索任务..."
-          class="search-input"
-        >
-        <span class="search-icon">🔍</span>
-      </div>
-      
       <div class="filter-controls">
         <select v-model="statusFilter" class="filter-select">
-          <option value="all">全部状态</option>
+          <option value="all">所有状态</option>
           <option value="pending">待处理</option>
           <option value="in-progress">进行中</option>
           <option value="completed">已完成</option>
@@ -24,10 +12,13 @@
         </select>
         
         <select v-model="tagFilter" class="filter-select">
-          <option value="all">全部标签</option>
+          <option value="all">所有标签</option>
           <option v-for="tag in availableTags" :key="tag" :value="tag">{{ tag }}</option>
         </select>
       </div>
+      
+      <!-- 视图切换按钮 -->
+
     </div>
 
     <!-- 任务统计 -->
@@ -149,7 +140,13 @@ import { dateService } from '../services/dateService'
 
 export default {
   name: 'TaskList',
-  emits: ['task-click', 'task-edit', 'task-delete', 'task-status-change', 'search-focus'],
+  props: {
+    searchQuery: {
+      type: String,
+      default: ''
+    }
+  },
+  emits: ['task-click', 'task-edit', 'task-delete', 'task-status-change', 'search-focus', 'search-input'],
   setup() {
     const taskStore = useTaskStore()
     const calendarStore = useCalendarStore()
@@ -161,7 +158,6 @@ export default {
   },
   data() {
     return {
-      searchQuery: '',
       statusFilter: 'all',
       tagFilter: 'all',
       currentPage: 1,
@@ -274,16 +270,7 @@ export default {
       this.$emit('task-status-change', task)
     },
     
-    onSearchFocus() {
-      this.$emit('search-focus')
-    },
-    
-    onSearchInput() {
-      // 搜索时自动切换到列表视图
-      if (this.searchQuery.trim() && this.calendarStore.viewMode !== 'list') {
-        this.calendarStore.switchView('list')
-      }
-    },
+
     
     formatTaskDate(date) {
       return dateService.formatChineseDate(date)
@@ -354,44 +341,19 @@ export default {
 }
 
 .task-list-header {
-  padding: 16px;
-  border-bottom: 1px solid #eee;
-  background: #f8f9fa;
-}
-
-.search-container {
-  position: relative;
-  margin-bottom: 12px;
-}
-
-.search-input {
-  width: 100%;
-  padding: 10px 40px 10px 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 14px;
-  transition: border-color 0.3s;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: #3498db;
-  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-}
-
-.search-icon {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #666;
-  pointer-events: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 0 10px;
 }
 
 .filter-controls {
   display: flex;
   gap: 12px;
 }
+
+
 
 .filter-select {
   padding: 8px 12px;
@@ -411,7 +373,7 @@ export default {
   display: flex;
   justify-content: space-around;
   padding: 12px 16px;
-  background: #f8f9fa;
+  background: transparent;
   border-bottom: 1px solid #eee;
 }
 
@@ -622,8 +584,22 @@ export default {
 }
 
 @media (max-width: 768px) {
+  .task-list-header {
+    background: transparent;
+  }
+  
   .filter-controls {
-    flex-direction: column;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .task-list {
+    padding: 10px;
+  }
+  
+  .task-item {
+    padding: 10px;
   }
   
   .task-stats {

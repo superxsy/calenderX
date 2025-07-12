@@ -7,11 +7,7 @@
         <h2 class="current-date">{{ currentDateDisplay }}</h2>
         <button @click="navigate(1)" class="nav-btn">&#9654;</button>
       </div>
-      <div class="view-toggle">
-        <button @click="switchView('month')" :class="{ active: viewMode === 'month' }" class="view-btn">月</button>
-        <button @click="switchView('week')" :class="{ active: viewMode === 'week' }" class="view-btn">周</button>
-        <button @click="switchView('list')" :class="{ active: viewMode === 'list' }" class="view-btn">列表</button>
-      </div>
+
     </div>
 
     <!-- 日历内容 -->
@@ -345,29 +341,7 @@ export default {
   text-align: center;
 }
 
-.view-toggle {
-  display: flex;
-  gap: 5px;
-}
 
-.view-btn {
-  padding: 8px 16px;
-  border: 1px solid #ddd;
-  background: white;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: all 0.3s;
-}
-
-.view-btn:hover {
-  background: #f8f9fa;
-}
-
-.view-btn.active {
-  background: #3498db;
-  color: white;
-  border-color: #3498db;
-}
 
 .calendar-content {
   flex: 1;
@@ -518,19 +492,6 @@ export default {
 }
 
 @media (max-width: 768px) {
-  .calendar-header {
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  .calendar-navigation {
-    order: 2;
-  }
-  
-  .view-toggle {
-    order: 1;
-  }
-  
   .calendar-day {
     min-height: 60px;
     padding: 4px;
