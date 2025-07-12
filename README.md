@@ -1,4 +1,4 @@
-# 📅 Vue Calendar Task Management System | Vue 日历任务管理系统
+# 📅 CalendarX - Modern Task Management System | 现代化任务管理系统
 
 [English](#english) | [中文](#chinese)
 
@@ -6,44 +6,46 @@
 
 ## English
 
-A modern calendar task management application built with Vue 3 + Vite, supporting task creation, editing, deletion, and multi-view display.
+A sophisticated calendar-based task management application built with Vue 3 and modern web technologies. CalendarX provides an intuitive interface for managing tasks across multiple views with powerful features for productivity enhancement.
 
-### 🌟 Features
+### 🌟 Key Features
 
-- **📋 Task Management**: Create, edit, delete and view tasks
-- **📅 Multi-view Mode**: Support for month view and list view
-- **🔍 Smart Search**: Quick search tasks by title, description or tags
-- **🏷️ Tag Classification**: Support for work, personal, study and other tags
-- **📱 Responsive Design**: Perfect adaptation for desktop and mobile devices
-- **💾 Data Persistence**: Local storage of task data
-- **🎨 Modern UI**: Clean and beautiful user interface
+- **📋 Comprehensive Task Management**: Create, edit, delete, and organize tasks with rich metadata
+- **📅 Multiple View Modes**: Switch between Month View, Week View, and List View seamlessly
+- **🔄 Recurring Tasks**: Support for daily, weekly, monthly, and yearly recurring patterns
+- **🔍 Advanced Search & Filter**: Real-time search with status-based filtering
+- **💾 Smart Data Management**: Automatic backup, manual backup, and data import/export
+- **📱 Responsive Design**: Optimized for desktop, tablet, and mobile devices
+- **🎨 Clean Modern UI**: Intuitive interface with consistent visual design
+- **⚡ High Performance**: Built with Vue 3 Composition API and optimized rendering
 
 ### 🚀 Live Demo
 
-Visit the deployed version: [https://superxsy.github.io/calenderX/](https://superxsy.github.io/calenderX/)
+**🌐 [Try CalendarX Live](https://superxsy.github.io/calenderX/)**
 
-> 🔄 **Latest Update**: Enhanced task management features and optimized project structure (December 2024)
+> 🔄 **Latest Update**: Enhanced UI/UX with unified view controls and responsive layout optimizations (January 2025)
 
 ### 🛠️ Tech Stack
 
-- **Frontend Framework**: Vue 3.5.17
+- **Frontend Framework**: Vue 3.5.17 (Composition API)
+- **State Management**: Pinia
 - **Build Tool**: Vite 7.0.3
 - **Development Language**: JavaScript (ES6+)
-- **Styling**: CSS3 + Flexbox/Grid
-- **Testing Framework**: Vitest + @vue/test-utils
+- **Styling**: CSS3 with Flexbox/Grid
+- **Testing**: Vitest + @vue/test-utils
 - **Deployment**: GitHub Pages + GitHub Actions
 
-### 📦 Installation & Running
+### 📦 Quick Start
 
-#### Requirements
+#### Prerequisites
 
 - Node.js >= 18.0.0
 - npm >= 8.0.0
 
-#### Local Development
+#### Installation
 
 ```bash
-# Clone the project
+# Clone the repository
 git clone https://github.com/superxsy/calenderX.git
 cd calenderX
 
@@ -53,7 +55,7 @@ npm install
 # Start development server
 npm run dev
 
-# Visit http://localhost:5173
+# Open http://localhost:5173
 ```
 
 #### Build for Production
@@ -62,103 +64,103 @@ npm run dev
 # Build the project
 npm run build
 
-# Preview build results
+# Preview production build
 npm run preview
 ```
 
 ### 🧪 Testing
 
 ```bash
-# Run tests
+# Run unit tests
 npm run test
 
-# Run tests and generate coverage report
+# Run tests with coverage
 npm run test:run
 
-# Start test UI interface
+# Launch test UI
 npm run test:ui
 ```
 
-### 📁 Project Structure
+### 📁 Project Architecture
 
 ```
 src/
-├── components/          # Reusable components
-│   └── HelloWorld.vue
+├── components/          # Reusable UI components
+│   ├── CalendarView.vue    # Calendar component (Month/Week views)
+│   ├── TaskList.vue        # Task list component
+│   ├── TaskModal.vue       # Task editing modal
+│   └── BackupModal.vue     # Data backup modal
+├── store/              # Pinia state management
+│   └── modules/        # Feature-specific stores
+│       ├── taskStore.js      # Task management state
+│       ├── calendarStore.js  # Calendar view state
+│       ├── backupStore.js    # Backup management
+│       └── uiStore.js        # UI state management
+├── services/           # Business logic layer
+│   ├── taskService.js        # Task operations
+│   ├── backupService.js      # Backup operations
+│   ├── storageService.js     # Local storage
+│   ├── dateService.js        # Date utilities
+│   └── validationService.js  # Data validation
 ├── test/               # Test files
-│   ├── setup.js       # Test environment configuration
-│   └── App.test.js    # Main application tests
-├── App.vue            # Main application component
-├── main.js            # Application entry point
-└── style.css          # Global styles
-
-public/
-├── calendar-tasks.json # Sample task data
-└── vite.svg           # Application icon
-
-.github/
-└── workflows/
-    └── static.yml     # GitHub Actions deployment configuration
+├── App.vue             # Root component
+├── main.js             # Application entry
+└── style.css           # Global styles
 ```
 
-### 🎯 Core Features
+### 🎯 Core Functionality
 
 #### Task Management
-- **Create Task**: Click on a date or "Add Task" button
-- **Edit Task**: Click on task card to edit
-- **Delete Task**: Delete in task details
-- **Task Status**: Support for todo, in-progress, completed status
+- **Create Tasks**: Click on calendar dates or use the "Add Task" button
+- **Edit Tasks**: Click on task items to modify details
+- **Task Status**: Toggle between Todo, In Progress, and Completed
+- **Recurring Tasks**: Set up repeating tasks with flexible patterns
+- **Rich Metadata**: Add descriptions, tags, and priority levels
 
-#### View Switching
-- **Month View**: Display tasks in calendar format
-- **List View**: Display all tasks in list format
+#### View Modes
+- **Month View**: Traditional calendar layout with task indicators
+- **Week View**: Detailed weekly schedule with time slots
+- **List View**: Comprehensive task list with search and filters
 
-#### Search Function
-- Search by task title
-- Search by task description
-- Filter by tags
+#### Data Management
+- **Auto Backup**: Automatic periodic data backup
+- **Manual Backup**: On-demand backup creation
+- **Import/Export**: JSON-based data portability
+- **Local Storage**: Persistent data storage in browser
 
 ### 🚀 Deployment
 
-The project uses GitHub Actions for automatic deployment to GitHub Pages:
+The project uses GitHub Actions for automated deployment:
 
 1. Push code to `main` branch
-2. GitHub Actions automatically triggers build
-3. After successful build, automatically deploy to GitHub Pages
-4. Visit `https://superxsy.github.io/calenderX/`
-
-#### Manual Deployment
-
-```bash
-# Build the project
-npm run build
-
-# Deploy dist/ directory contents to your server
-```
+2. GitHub Actions triggers automatic build
+3. Successful builds deploy to GitHub Pages
+4. Access at `https://superxsy.github.io/calenderX/`
 
 ### 🤝 Contributing
 
-1. Fork this repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
 ### 📝 Development Guidelines
 
 - Follow Vue 3 Composition API best practices
-- Use ES6+ syntax
-- Keep code clean and readable
-- Write unit tests covering core functionality
-- Use semantic commit messages
+- Use Pinia for state management
+- Implement responsive design principles
+- Write comprehensive unit tests
+- Follow semantic commit conventions
+- Maintain clean, readable code
 
-### 🐛 Issue Reporting
+### 🐛 Issues & Support
 
-If you find any issues or have suggestions for improvement:
+Found a bug or have a feature request?
 
-1. Check [Issues](https://github.com/superxsy/calenderX/issues) for existing related issues
-2. If none exist, create a new Issue
-3. Describe the problem and reproduction steps in detail
+1. Check [existing issues](https://github.com/superxsy/calenderX/issues)
+2. Create a new issue with detailed description
+3. Include steps to reproduce for bugs
 
 ### 📄 License
 
@@ -168,48 +170,53 @@ This project is licensed under the [MIT License](LICENSE).
 
 - [Vue.js](https://vuejs.org/) - The Progressive JavaScript Framework
 - [Vite](https://vitejs.dev/) - Next Generation Frontend Tooling
-- [Vitest](https://vitest.dev/) - A Vite-native test framework
+- [Vitest](https://vitest.dev/) - A Vite-native testing framework
+- [Pinia](https://pinia.vuejs.org/) - The Vue Store that you will enjoy using
 
 ---
 
 ## Chinese
 
-一个基于 Vue 3 + Vite 构建的现代化日历任务管理应用，支持任务创建、编辑、删除和多视图展示。
+一个基于 Vue 3 和现代 Web 技术构建的精致日历任务管理应用。CalendarX 提供直观的界面，支持多视图任务管理，具备强大的生产力提升功能。
 
-### 🌟 功能特性
+### 🌟 核心特性
 
-- **📋 任务管理**: 创建、编辑、删除和查看任务
-- **📅 多视图模式**: 支持月视图和列表视图
-- **🔍 智能搜索**: 按标题、描述或标签快速搜索任务
-- **🏷️ 标签分类**: 支持工作、个人、学习等多种标签
-- **📱 响应式设计**: 完美适配桌面和移动设备
-- **💾 数据持久化**: 本地存储任务数据
-- **🎨 现代化UI**: 简洁美观的用户界面
+- **📋 全面的任务管理**: 创建、编辑、删除和组织任务，支持丰富的元数据
+- **📅 多视图模式**: 无缝切换月视图、周视图和列表视图
+- **🔄 重复任务**: 支持日、周、月、年重复模式
+- **🔍 高级搜索过滤**: 实时搜索和基于状态的过滤
+- **💾 智能数据管理**: 自动备份、手动备份和数据导入导出
+- **📱 响应式设计**: 针对桌面、平板和移动设备优化
+- **🎨 简洁现代UI**: 直观界面，视觉设计一致
+- **⚡ 高性能**: 基于 Vue 3 组合式 API 和优化渲染
 
 ### 🚀 在线演示
 
-访问部署版本：[https://superxsy.github.io/calenderX/](https://superxsy.github.io/calenderX/)
+**🌐 [体验 CalendarX](https://superxsy.github.io/calenderX/)**
+
+> 🔄 **最新更新**: 增强 UI/UX，统一视图控制和响应式布局优化 (2025年1月)
 
 ### 🛠️ 技术栈
 
-- **前端框架**: Vue 3.5.17
+- **前端框架**: Vue 3.5.17 (组合式 API)
+- **状态管理**: Pinia
 - **构建工具**: Vite 7.0.3
 - **开发语言**: JavaScript (ES6+)
 - **样式**: CSS3 + Flexbox/Grid
-- **测试框架**: Vitest + @vue/test-utils
+- **测试**: Vitest + @vue/test-utils
 - **部署**: GitHub Pages + GitHub Actions
 
-### 📦 安装与运行
+### 📦 快速开始
 
 #### 环境要求
 
 - Node.js >= 18.0.0
 - npm >= 8.0.0
 
-#### 本地开发
+#### 安装步骤
 
 ```bash
-# 克隆项目
+# 克隆仓库
 git clone https://github.com/superxsy/calenderX.git
 cd calenderX
 
@@ -219,123 +226,120 @@ npm install
 # 启动开发服务器
 npm run dev
 
-# 访问 http://localhost:5173
+# 打开 http://localhost:5173
 ```
 
-#### 构建生产版本
+#### 生产构建
 
 ```bash
 # 构建项目
 npm run build
 
-# 预览构建结果
+# 预览生产版本
 npm run preview
 ```
 
 ### 🧪 测试
 
 ```bash
-# 运行测试
+# 运行单元测试
 npm run test
 
-# 运行测试并生成覆盖率报告
+# 运行测试并生成覆盖率
 npm run test:run
 
-# 启动测试UI界面
+# 启动测试UI
 npm run test:ui
 ```
 
-### 📁 项目结构
+### 📁 项目架构
 
 ```
 src/
-├── components/          # 可复用组件
-│   └── HelloWorld.vue
+├── components/          # 可复用UI组件
+│   ├── CalendarView.vue    # 日历组件（月/周视图）
+│   ├── TaskList.vue        # 任务列表组件
+│   ├── TaskModal.vue       # 任务编辑模态框
+│   └── BackupModal.vue     # 数据备份模态框
+├── store/              # Pinia 状态管理
+│   └── modules/        # 功能特定的存储
+│       ├── taskStore.js      # 任务管理状态
+│       ├── calendarStore.js  # 日历视图状态
+│       ├── backupStore.js    # 备份管理
+│       └── uiStore.js        # UI状态管理
+├── services/           # 业务逻辑层
+│   ├── taskService.js        # 任务操作
+│   ├── backupService.js      # 备份操作
+│   ├── storageService.js     # 本地存储
+│   ├── dateService.js        # 日期工具
+│   └── validationService.js  # 数据验证
 ├── test/               # 测试文件
-│   ├── setup.js       # 测试环境配置
-│   └── App.test.js    # 主应用测试
-├── App.vue            # 主应用组件
-├── main.js            # 应用入口
-└── style.css          # 全局样式
-
-public/
-├── calendar-tasks.json # 示例任务数据
-└── vite.svg           # 应用图标
-
-.github/
-└── workflows/
-    └── static.yml     # GitHub Actions 部署配置
+├── App.vue             # 根组件
+├── main.js             # 应用入口
+└── style.css           # 全局样式
 ```
 
-### 🎯 核心功能说明
+### 🎯 核心功能
 
 #### 任务管理
-- **创建任务**: 点击日期或"添加任务"按钮
-- **编辑任务**: 点击任务卡片进行编辑
-- **删除任务**: 在任务详情中删除
-- **任务状态**: 支持待办、进行中、已完成状态
+- **创建任务**: 点击日历日期或使用"添加任务"按钮
+- **编辑任务**: 点击任务项目修改详情
+- **任务状态**: 在待办、进行中和已完成之间切换
+- **重复任务**: 设置灵活的重复模式
+- **丰富元数据**: 添加描述、标签和优先级
 
-#### 视图切换
-- **月视图**: 以日历形式展示任务
-- **列表视图**: 以列表形式展示所有任务
+#### 视图模式
+- **月视图**: 传统日历布局，显示任务指示器
+- **周视图**: 详细的周计划，带时间段
+- **列表视图**: 全面的任务列表，支持搜索和过滤
 
-#### 搜索功能
-- 支持按任务标题搜索
-- 支持按任务描述搜索
-- 支持按标签筛选
+#### 数据管理
+- **自动备份**: 自动定期数据备份
+- **手动备份**: 按需创建备份
+- **导入导出**: 基于JSON的数据可移植性
+- **本地存储**: 浏览器中的持久数据存储
 
 ### 🚀 部署说明
 
-项目使用 GitHub Actions 自动部署到 GitHub Pages：
+项目使用 GitHub Actions 自动部署：
 
 1. 推送代码到 `main` 分支
-2. GitHub Actions 自动触发构建
-3. 构建成功后自动部署到 GitHub Pages
+2. GitHub Actions 触发自动构建
+3. 构建成功后部署到 GitHub Pages
 4. 访问 `https://superxsy.github.io/calenderX/`
-
-#### 手动部署
-
-```bash
-# 构建项目
-npm run build
-
-# 将 dist/ 目录内容部署到你的服务器
-```
 
 ### 🤝 贡献指南
 
-1. Fork 本仓库
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 开启 Pull Request
+1. Fork 仓库
+2. 创建功能分支 (`git checkout -b feature/amazing-feature`)
+3. 提交更改 (`git commit -m 'Add amazing feature'`)
+4. 推送到分支 (`git push origin feature/amazing-feature`)
+5. 打开 Pull Request
 
 ### 📝 开发规范
 
-- 遵循 Vue 3 Composition API 最佳实践
-- 使用 ES6+ 语法
-- 保持代码简洁和可读性
-- 编写单元测试覆盖核心功能
-- 提交信息使用语义化格式
+- 遵循 Vue 3 组合式 API 最佳实践
+- 使用 Pinia 进行状态管理
+- 实施响应式设计原则
+- 编写全面的单元测试
+- 遵循语义化提交约定
+- 保持代码清洁可读
 
-### 🐛 问题反馈
+### 🐛 问题与支持
 
-如果你发现任何问题或有改进建议，请：
+发现错误或有功能请求？
 
-1. 查看 [Issues](https://github.com/superxsy/calenderX/issues) 是否已有相关问题
-2. 如果没有，请创建新的 Issue
-3. 详细描述问题和复现步骤
+1. 查看 [现有问题](https://github.com/superxsy/calenderX/issues)
+2. 创建新问题并详细描述
+3. 对于错误，请包含重现步骤
 
 ### 📄 许可证
 
-本项目基于 [MIT License](LICENSE) 开源协议。
+本项目基于 [MIT 许可证](LICENSE) 开源。
 
 ### 🙏 致谢
 
 - [Vue.js](https://vuejs.org/) - 渐进式 JavaScript 框架
 - [Vite](https://vitejs.dev/) - 下一代前端构建工具
-- [Vitest](https://vitest.dev/) - 由 Vite 提供支持的测试框架
-
----
-
-⭐ If this project helps you, please give it a Star! | 如果这个项目对你有帮助，请给它一个 Star！
+- [Vitest](https://vitest.dev/) - Vite 原生测试框架
+- [Pinia](https://pinia.vuejs.org/) - 你会喜欢使用的 Vue 状态管理库
