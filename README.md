@@ -83,9 +83,6 @@ npm run test:ui
 src/
 ├── components/          # Reusable components
 │   └── HelloWorld.vue
-├── views/               # Page-level view components
-├── store/               # Pinia stores
-├── services/            # Data access & backup logic
 ├── test/               # Test files
 │   ├── setup.js       # Test environment configuration
 │   └── App.test.js    # Main application tests
@@ -252,9 +249,6 @@ npm run test:ui
 src/
 ├── components/          # 可复用组件
 │   └── HelloWorld.vue
-├── views/               # 视图组件
-├── store/               # Pinia 状态管理
-├── services/            # 数据读写和备份逻辑
 ├── test/               # 测试文件
 │   ├── setup.js       # 测试环境配置
 │   └── App.test.js    # 主应用测试

@@ -828,54 +828,7 @@ body {
   background: #c0392b;
 }
 
-/* 删除确认模态框样式 */
-.delete-confirm-modal {
-  max-width: 400px;
-  width: 90%;
-}
 
-.delete-confirm-modal .modal-header {
-  background: #f8f9fa;
-  border-bottom: 1px solid #dee2e6;
-  padding: 16px 20px;
-  border-radius: 12px 12px 0 0;
-}
-
-.delete-confirm-modal .modal-header h3 {
-  margin: 0;
-  color: #e74c3c;
-  font-size: 18px;
-  font-weight: 600;
-}
-
-.delete-confirm-modal .modal-body {
-  padding: 20px;
-  text-align: center;
-}
-
-.delete-confirm-modal .modal-body p {
-  margin: 0;
-  color: #495057;
-  font-size: 16px;
-  line-height: 1.5;
-}
-
-.delete-confirm-modal .modal-footer {
-  padding: 16px 20px;
-  border-top: 1px solid #dee2e6;
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  border-radius: 0 0 12px 12px;
-  background: #f8f9fa;
-}
-
-.delete-confirm-modal .btn-cancel,
-.delete-confirm-modal .btn-delete {
-  min-width: 80px;
-  padding: 8px 16px;
-  font-size: 14px;
-}
 
 /* 通用消息模态框样式 */
 .message-modal {
