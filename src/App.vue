@@ -45,7 +45,7 @@
         <CalendarView 
           v-if="viewMode !== 'list'"
           @task-click="openTaskModal"
-          @day-click="openTaskModal"
+          @day-click="onDayClick"
           @task-status-change="updateTaskStatus"
         />
         
@@ -65,7 +65,7 @@
       <!-- 任务模态框组件 -->
       <TaskModal
         :is-visible="showTaskModal"
-        :task="editingTask"
+        :task="selectedTask"
         :selected-date="selectedDate"
         @close="closeTaskModal"
         @save="saveTask"
@@ -78,21 +78,7 @@
         @close="closeBackupModal"
       />
 
-      <!-- 删除确认模态框 -->
-      <div v-if="showDeleteConfirmModal" class="modal-overlay" @click="cancelDelete">
-        <div class="modal-content delete-confirm-modal" @click.stop>
-          <div class="modal-header">
-            <h3>确认删除</h3>
-          </div>
-          <div class="modal-body">
-            <p>{{ deleteConfirmMessage }}</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" @click="cancelDelete" class="btn-cancel">取消</button>
-            <button type="button" @click="confirmDelete" class="btn-delete">确认删除</button>
-          </div>
-        </div>
-      </div>
+
 
       <!-- 通用消息模态框 -->
       <div v-if="showMessageModal" class="modal-overlay" @click="closeMessageModal">
@@ -160,11 +146,8 @@ export default {
       searchTerm: '',
       showTaskModal: false,
       showBackupModal: false,
-      editingTask: null,
+      selectedTask: null,
       selectedDate: null,
-      showDeleteConfirmModal: false,
-      deleteConfirmMessage: '',
-      deleteTaskToConfirm: null,
       showMessageModal: false,
       messageModalType: 'info',
       messageModalTitle: '',
@@ -187,14 +170,17 @@ export default {
     switchView(view) {
       this.calendarStore.switchView(view)
     },
+    onDayClick(date) {
+      this.openTaskModal(null, date)
+    },
     openTaskModal(task = null, date = null) {
-      this.editingTask = task
+      this.selectedTask = task
       this.selectedDate = date
       this.showTaskModal = true
     },
     closeTaskModal() {
       this.showTaskModal = false
-      this.editingTask = null
+      this.selectedTask = null
       this.selectedDate = null
     },
     openBackupModal() {
@@ -203,13 +189,13 @@ export default {
     closeBackupModal() {
       this.showBackupModal = false
     },
-    saveTask(eventData) {
+    async saveTask(eventData) {
       try {
         const { task, isEditing, editOption, originalTask } = eventData
         if (isEditing) {
-          this.taskStore.updateTask(originalTask.id, task, editOption)
+          await this.taskStore.updateTask(originalTask.id, task, editOption)
         } else {
-          this.taskStore.addTask(task)
+          await this.taskStore.addTask(task)
         }
         this.closeTaskModal()
         this.showMessage('success', '保存成功', '任务已保存')
@@ -218,29 +204,38 @@ export default {
         this.showMessage('error', '保存失败', '保存任务失败，请重试')
       }
     },
-    updateTaskStatus(task) {
-      this.taskStore.updateTaskStatus(task.id, task.completed)
+    async updateTaskStatus(task) {
+      try {
+        await this.taskStore.updateTaskStatus(task)
+      } catch (error) {
+        console.error('更新任务状态失败:', error)
+        this.showMessage('error', '更新失败', '更新任务状态失败，请重试')
+      }
     },
-    showDeleteConfirm(task, options = {}) {
-      this.deleteTaskToConfirm = task
-      if (task.recurring) {
-        this.deleteConfirmMessage = '这是一个重复任务，您要删除所有重复任务还是仅删除当前任务？'
+    async showDeleteConfirm(eventData) {
+      // 处理来自TaskModal的删除事件
+      if (eventData && eventData.task) {
+        const { task, deleteOption } = eventData
+        try {
+          await this.taskStore.deleteTask(task.id, deleteOption || 'single')
+          this.showMessage('success', '删除成功', '任务已删除')
+        } catch (error) {
+          console.error('删除任务失败:', error)
+          this.showMessage('error', '删除失败', '删除任务失败，请重试')
+        }
       } else {
-        this.deleteConfirmMessage = `确定要删除任务 "${task.title}" 吗？`
+        // 处理来自TaskList的删除事件（直接传递task对象）
+        const task = eventData
+        this.deleteTaskToConfirm = task
+        this.deleteOption = 'single'
+        
+        if (task.recurring) {
+          this.deleteConfirmMessage = '这是一个重复任务，您要删除所有重复任务还是仅删除当前任务？'
+        } else {
+          // 对于TaskList的删除事件，暂时保留原有逻辑
+          console.log('TaskList删除事件暂未实现')
+        }
       }
-      this.showDeleteConfirmModal = true
-    },
-    confirmDelete() {
-      if (this.deleteTaskToConfirm) {
-        this.taskStore.deleteTask(this.deleteTaskToConfirm.id)
-        this.showMessage('success', '删除成功', '任务已删除')
-      }
-      this.cancelDelete()
-    },
-    cancelDelete() {
-      this.showDeleteConfirmModal = false
-      this.deleteConfirmMessage = ''
-      this.deleteTaskToConfirm = null
     },
     exportTasks() {
       try {
@@ -336,7 +331,7 @@ export default {
     // 初始化应用
     await this.taskStore.loadTasks()
     await this.backupStore.loadBackups()
-    this.calendarStore.render()
+    this.calendarStore.renderCurrentView()
   },
   beforeUnmount() {
     // 清理资源
@@ -549,10 +544,7 @@ export default {
   gap: 10px;
 }
 
-.delete-confirm-modal .modal-body {
-  text-align: center;
-  padding: 30px 20px;
-}
+
 
 .message-modal .modal-body {
   text-align: center;

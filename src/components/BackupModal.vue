@@ -266,11 +266,14 @@ export default {
   },
   computed: {
     backupSettings() {
-      return this.backupStore.settings
+      return {
+        enabled: this.backupStore.autoBackupEnabled,
+        interval: this.backupStore.autoBackupInterval
+      }
     },
     
     backupHistory() {
-      return this.backupStore.history
+      return this.backupStore.formattedBackups
     },
     
     paginatedBackups() {
@@ -305,7 +308,12 @@ export default {
     },
     
     storageUsage() {
-      return storageService.getStorageUsage()
+      const info = storageService.getStorageInfo()
+      return {
+        used: info.totalSize,
+        total: info.estimatedQuota,
+        percentage: info.usagePercentage
+      }
     }
   },
   watch: {
@@ -322,14 +330,18 @@ export default {
     },
     
     saveBackupSettings() {
-      this.backupStore.updateSettings(this.backupSettings)
+      this.backupStore.setAutoBackup(
+        this.backupSettings.enabled,
+        this.backupSettings.interval
+      )
     },
     
     async createManualBackup() {
       this.isCreatingBackup = true
       
       try {
-        const backup = await this.backupStore.createBackup()
+        const tasks = this.taskStore.tasks
+        const backup = await this.backupStore.createBackup(tasks, 'manual')
         this.$emit('backup-created', backup)
         this.loadBackupHistory()
       } catch (error) {
@@ -360,7 +372,7 @@ export default {
     },
     
     downloadBackup(backup) {
-      this.backupStore.downloadBackup(backup.id)
+      this.backupStore.exportBackup(backup.id)
     },
     
     async deleteBackup(backup) {
@@ -433,7 +445,7 @@ export default {
       this.isCleaning = true
       
       try {
-        await storageService.cleanupStorage()
+        storageService.cleanup()
         // 重新加载存储信息
         this.$forceUpdate()
       } catch (error) {
@@ -444,7 +456,7 @@ export default {
     },
     
     loadBackupHistory() {
-      this.backupStore.loadHistory()
+      this.backupStore.loadBackups()
     },
     
     formatBackupDate(timestamp) {

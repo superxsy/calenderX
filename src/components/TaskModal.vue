@@ -220,7 +220,7 @@
         </div>
       </div>
       
-      <div class="form-actions">
+      <div class="modal-footer">
         <button @click="cancelDelete" class="btn btn-secondary">取消</button>
         <button @click="confirmDelete" class="btn btn-danger">确认删除</button>
       </div>
@@ -786,6 +786,14 @@ export default {
   margin: 0 0 16px 0;
   color: #333;
   line-height: 1.5;
+}
+
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
 }
 
 @media (max-width: 768px) {

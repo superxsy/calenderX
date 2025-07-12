@@ -121,7 +121,7 @@ import { dateService } from '../services/dateService'
 
 export default {
   name: 'CalendarView',
-  emits: ['task-click', 'day-click', 'task-status-change'],
+  emits: ['task-click', 'day-click', 'task-status-change', 'view-change'],
   setup() {
     const calendarStore = useCalendarStore()
     const taskStore = useTaskStore()
@@ -139,10 +139,10 @@ export default {
       return this.calendarStore.viewMode
     },
     monthDays() {
-      return this.calendarStore.monthViewData
+      return this.calendarStore.monthDays
     },
     weekDays() {
-      return this.calendarStore.weekViewData
+      return this.calendarStore.weekDays
     },
     filteredTasks() {
       return this.taskStore.filteredTasks
@@ -387,6 +387,7 @@ export default {
   text-align: center;
   font-weight: bold;
   color: #666;
+  box-sizing: border-box;
 }
 
 .calendar-grid {
@@ -413,6 +414,7 @@ export default {
   transition: background-color 0.3s;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 }
 
 .calendar-day:hover {

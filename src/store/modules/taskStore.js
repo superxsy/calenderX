@@ -94,6 +94,12 @@ export const useTaskStore = defineStore('task', {
         }
         
         await this.saveTasks()
+        
+        // 刷新日历视图以显示新添加的任务
+        const { useCalendarStore } = await import('./calendarStore')
+        const calendarStore = useCalendarStore()
+        calendarStore.renderCurrentView()
+        
         return newTasks
       } catch (error) {
         this.error = error.message
@@ -102,27 +108,85 @@ export const useTaskStore = defineStore('task', {
     },
 
     // 更新任务
-    async updateTask(taskId, updates) {
+    async updateTask(taskId, updates, editOption = 'single') {
       try {
-        const index = this.tasks.findIndex(task => task.id === taskId)
-        if (index !== -1) {
-          this.tasks[index] = { ...this.tasks[index], ...updates }
-          await this.saveTasks()
+        const task = this.tasks.find(task => task.id === taskId)
+        if (!task) {
+          throw new Error('任务不存在')
         }
+
+        // 如果是重复任务且选择编辑所有
+        if (task.repeatId && editOption === 'all') {
+          // 更新所有具有相同 repeatId 的任务
+          const repeatTasks = this.tasks.filter(t => t.repeatId === task.repeatId)
+          repeatTasks.forEach(repeatTask => {
+            const index = this.tasks.findIndex(t => t.id === repeatTask.id)
+            if (index !== -1) {
+              // 保留每个任务的特定属性（如日期、完成状态）
+              const preservedProps = {
+                id: repeatTask.id,
+                date: repeatTask.date,
+                completed: repeatTask.completed,
+                status: repeatTask.status
+              }
+              this.tasks[index] = { 
+                ...this.tasks[index], 
+                ...updates, 
+                ...preservedProps
+              }
+            }
+          })
+        } else {
+          // 只更新单个任务
+          const index = this.tasks.findIndex(task => task.id === taskId)
+          if (index !== -1) {
+            this.tasks[index] = { ...this.tasks[index], ...updates }
+          }
+        }
+        
+        await this.saveTasks()
+        
+        // 刷新日历视图以显示更新后的任务
+        const { useCalendarStore } = await import('./calendarStore')
+        const calendarStore = useCalendarStore()
+        calendarStore.renderCurrentView()
       } catch (error) {
         this.error = error.message
+        console.error('更新任务失败:', error)
         throw error
       }
     },
 
     // 删除任务
-    async deleteTask(taskId) {
+    async deleteTask(taskId, deleteOption = 'single') {
       try {
-        const index = this.tasks.findIndex(task => task.id === taskId)
-        if (index !== -1) {
-          this.tasks.splice(index, 1)
-          await this.saveTasks()
+        const task = this.tasks.find(task => task.id === taskId)
+        if (!task) {
+          throw new Error('任务不存在')
         }
+
+        // 如果是重复任务且选择删除所有
+        if (task.repeatId && deleteOption === 'all') {
+          // 删除所有具有相同 repeatId 的任务
+          for (let i = this.tasks.length - 1; i >= 0; i--) {
+            if (this.tasks[i].repeatId === task.repeatId) {
+              this.tasks.splice(i, 1)
+            }
+          }
+        } else {
+          // 只删除单个任务
+          const index = this.tasks.findIndex(task => task.id === taskId)
+          if (index !== -1) {
+            this.tasks.splice(index, 1)
+          }
+        }
+        
+        await this.saveTasks()
+        
+        // 刷新日历视图
+        const { useCalendarStore } = await import('./calendarStore')
+        const calendarStore = useCalendarStore()
+        calendarStore.renderCurrentView()
       } catch (error) {
         this.error = error.message
         throw error
@@ -132,12 +196,19 @@ export const useTaskStore = defineStore('task', {
     // 更新任务状态
     async updateTaskStatus(task) {
       try {
-        await this.updateTask(task.id, { 
+        const updates = { 
           completed: task.completed,
-          status: task.completed ? 'completed' : task.status
-        })
+          status: task.completed ? 'completed' : (task.status || 'pending')
+        }
+        await this.updateTask(task.id, updates)
+        
+        // 刷新日历视图以显示更新后的任务状态
+        const { useCalendarStore } = await import('./calendarStore')
+        const calendarStore = useCalendarStore()
+        calendarStore.renderCurrentView()
       } catch (error) {
         this.error = error.message
+        console.error('更新任务状态失败:', error)
         throw error
       }
     },
@@ -172,6 +243,31 @@ export const useTaskStore = defineStore('task', {
     // 清除错误
     clearError() {
       this.error = null
+    },
+
+    // 获取所有任务（用于导出）
+    getAllTasks() {
+      return this.tasks
+    },
+
+    // 导入任务
+    async importTasks(importedTasks, replace = false) {
+      try {
+        if (replace) {
+          this.tasks = [...importedTasks]
+        } else {
+          // 合并任务，避免ID冲突
+          const existingIds = new Set(this.tasks.map(task => task.id))
+          const newTasks = importedTasks.filter(task => !existingIds.has(task.id))
+          this.tasks.push(...newTasks)
+        }
+        
+        this.extractColorsFromTasks()
+        await this.saveTasks()
+      } catch (error) {
+        this.error = error.message
+        throw error
+      }
     }
   }
 })
