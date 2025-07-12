@@ -22,6 +22,8 @@ A modern calendar task management application built with Vue 3 + Vite, supportin
 
 Visit the deployed version: [https://superxsy.github.io/calenderX/](https://superxsy.github.io/calenderX/)
 
+> 🔄 **Latest Update**: Integrated Everything SDK and enhanced task management features (December 2024)
+
 ### 🛠️ Tech Stack
 
 - **Frontend Framework**: Vue 3.5.17
