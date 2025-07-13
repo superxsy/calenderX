@@ -1,6 +1,6 @@
 <template>
   <!-- 任务模态框 -->
-  <div v-if="isVisible" class="modal-overlay" @click="closeModal">
+  <div v-if="isVisible" class="modal-overlay">
     <div class="modal-content" @click.stop>
       <div class="modal-header">
         <h3>{{ isEditing ? '编辑任务' : '新建任务' }}</h3>
@@ -197,7 +197,7 @@
   </div>
   
   <!-- 删除确认模态框 -->
-  <div v-if="showDeleteModal" class="modal-overlay" @click="cancelDelete">
+  <div v-if="showDeleteModal" class="modal-overlay">
     <div class="modal-content delete-modal" @click.stop>
       <div class="modal-header">
         <h3>确认删除</h3>

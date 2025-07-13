@@ -111,14 +111,33 @@ class BackupService {
   // 恢复备份
   async restoreBackup(backup) {
     try {
+      console.log('backupService.restoreBackup 开始，备份对象:', {
+        backup,
+        hasBackup: !!backup,
+        hasData: !!(backup && backup.data),
+        dataType: backup && backup.data ? typeof backup.data : 'undefined',
+        isArray: backup && backup.data ? Array.isArray(backup.data) : false,
+        dataLength: backup && backup.data ? backup.data.length : 0
+      })
+      
       if (!backup || !backup.data) {
+        console.error('备份数据无效:', { backup, hasData: !!(backup && backup.data) })
         throw new Error('备份数据无效')
       }
       
       // 验证备份数据格式
       if (!Array.isArray(backup.data)) {
+        console.error('备份数据格式错误，不是数组:', {
+          dataType: typeof backup.data,
+          data: backup.data
+        })
         throw new Error('备份数据格式错误')
       }
+      
+      console.log('备份数据验证通过，返回数据:', {
+        dataLength: backup.data.length,
+        firstItem: backup.data[0] || null
+      })
       
       return backup.data
     } catch (error) {

@@ -88,12 +88,35 @@ export const useBackupStore = defineStore('backup', {
     // 恢复备份
     async restoreBackup(backupId) {
       try {
+        console.log('backupStore.restoreBackup 开始，backupId:', backupId)
+        console.log('当前备份列表:', this.backups.map(b => ({ id: b.id, name: b.name, taskCount: b.taskCount })))
+        
         const backup = this.backups.find(b => b.id === backupId)
         if (!backup) {
+          console.error('备份不存在，backupId:', backupId)
           throw new Error('备份不存在')
         }
         
-        return await backupService.restoreBackup(backup)
+        console.log('找到备份:', {
+          id: backup.id,
+          name: backup.name,
+          type: backup.type,
+          taskCount: backup.taskCount,
+          dataExists: !!backup.data,
+          dataType: typeof backup.data,
+          isArray: Array.isArray(backup.data),
+          dataLength: backup.data ? backup.data.length : 0
+        })
+        
+        const result = await backupService.restoreBackup(backup)
+        console.log('backupService.restoreBackup 返回结果:', {
+          result,
+          type: typeof result,
+          isArray: Array.isArray(result),
+          length: result ? result.length : 0
+        })
+        
+        return result
       } catch (error) {
         this.error = error.message
         console.error('Failed to restore backup:', error)

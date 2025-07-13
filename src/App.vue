@@ -67,12 +67,13 @@
       <BackupModal
         :is-visible="showBackupModal"
         @close="closeBackupModal"
+        @show-message="showMessage"
       />
 
 
 
       <!-- 通用消息模态框 -->
-      <div v-if="showMessageModal" class="modal-overlay" @click="closeMessageModal">
+      <div v-if="showMessageModal" class="modal-overlay">
         <div class="modal-content message-modal" :class="`message-modal-${messageModalType}`" @click.stop>
           <div class="modal-header">
             <h3>{{ messageModalTitle }}</h3>
@@ -192,7 +193,6 @@ export default {
           await this.taskStore.addTask(task)
         }
         this.closeTaskModal()
-        this.showMessage('success', '保存成功', '任务已保存')
       } catch (error) {
         console.error('保存任务失败:', error)
         this.showMessage('error', '保存失败', '保存任务失败，请重试')

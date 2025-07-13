@@ -283,6 +283,38 @@ searchTerm: '',
       }
     },
 
+    // 恢复任务（从备份）
+    async restoreTasks(restoredTasks) {
+      try {
+        console.log('taskStore.restoreTasks 开始执行，接收到的数据:', restoredTasks)
+        
+        if (!Array.isArray(restoredTasks)) {
+          throw new Error('恢复数据必须是数组格式')
+        }
+        
+        // 完全替换当前任务
+        this.tasks = [...restoredTasks]
+        console.log('任务已替换，当前任务数量:', this.tasks.length)
+        
+        // 重新提取颜色
+        this.extractColorsFromTasks()
+        
+        // 保存到本地存储
+        await this.saveTasks()
+        console.log('任务已保存到本地存储')
+        
+        // 刷新日历视图
+        const { useCalendarStore } = await import('./calendarStore')
+        const calendarStore = useCalendarStore()
+        calendarStore.renderCurrentView()
+        console.log('日历视图已刷新')
+      } catch (error) {
+        this.error = error.message
+        console.error('恢复任务失败:', error)
+        throw error
+      }
+    },
+
     async exportTasks() {
       try {
         const { dateService } = await import('../../services/dateService')

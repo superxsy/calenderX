@@ -1,6 +1,6 @@
 <template>
   <!-- 备份管理模态框 -->
-  <div v-if="isVisible" class="modal-overlay" @click="closeModal">
+  <div v-if="isVisible" class="modal-overlay">
     <div class="modal-content" @click.stop>
       <div class="modal-header">
         <h3>数据管理</h3>
@@ -354,19 +354,63 @@ export default {
     },
     
     async restoreBackup(backup) {
-      if (!confirm(`确定要恢复备份 "${backup.name}" 吗？这将替换当前所有数据。`)) {
-        return
-      }
+      // 使用内部确认对话框替代浏览器confirm
+      this.$emit('show-message', 'confirm', '确认恢复备份', 
+        `确定要恢复备份 "${backup.name}" 吗？这将替换当前所有数据。`,
+        () => this.performRestore(backup),
+        () => { this.isRestoring = false }
+      )
+      return
+    },
+    
+    async performRestore(backup) {
       
       this.isRestoring = true
       
       try {
-        await this.backupStore.restoreBackup(backup.id)
+        console.log('开始恢复备份:', backup)
+        console.log('备份数据结构:', {
+          id: backup.id,
+          name: backup.name,
+          type: backup.type,
+          taskCount: backup.taskCount,
+          dataType: typeof backup.data,
+          isArray: Array.isArray(backup.data),
+          dataLength: backup.data ? backup.data.length : 0
+        })
+        
+        // 从备份中恢复数据
+        const restoredTasks = await this.backupStore.restoreBackup(backup.id)
+        console.log('获取到备份数据:', restoredTasks)
+        console.log('恢复数据类型:', typeof restoredTasks, '是否为数组:', Array.isArray(restoredTasks))
+        
+        if (!restoredTasks || !Array.isArray(restoredTasks)) {
+          console.error('备份数据验证失败:', {
+            restoredTasks,
+            type: typeof restoredTasks,
+            isArray: Array.isArray(restoredTasks)
+          })
+          throw new Error('备份数据格式错误或为空')
+        }
+        
+        if (restoredTasks.length === 0) {
+          console.warn('备份中没有任务数据')
+          this.$emit('show-message', 'info', '提示', '备份中没有任务数据，无法恢复')
+          return
+        }
+        
+        // 将恢复的数据应用到任务存储中
+        await this.taskStore.restoreTasks(restoredTasks)
+        console.log('任务恢复完成')
+        
         this.$emit('backup-restored', backup)
         this.closeModal()
+        
+        // 显示成功消息
+        this.$emit('show-message', 'success', '恢复成功', `备份 "${backup.name}" 恢复成功！共恢复 ${restoredTasks.length} 个任务`)
       } catch (error) {
         console.error('恢复备份失败:', error)
-        // 这里可以显示错误消息
+        this.$emit('show-message', 'error', '恢复失败', '恢复备份失败：' + error.message)
       } finally {
         this.isRestoring = false
       }
@@ -377,9 +421,15 @@ export default {
     },
     
     async deleteBackup(backup) {
-      if (!confirm(`确定要删除备份 "${backup.name}" 吗？`)) {
-        return
-      }
+      // 使用内部确认对话框替代浏览器confirm
+      this.$emit('show-message', 'confirm', '确认删除备份', 
+        `确定要删除备份 "${backup.name}" 吗？`,
+        () => this.performDelete(backup)
+      )
+      return
+    },
+    
+    async performDelete(backup) {
       
       try {
         await this.backupStore.deleteBackup(backup.id)
@@ -399,7 +449,7 @@ export default {
         await this.taskStore.exportTasks()
       } catch (error) {
         console.error('导出任务失败:', error)
-        alert('导出失败，请重试')
+        this.$emit('show-message', 'error', '导出失败', '导出失败，请重试')
       }
     },
     
@@ -408,7 +458,7 @@ export default {
       if (file && file.type === 'application/json') {
         this.selectedFile = file
       } else {
-        alert('请选择有效的 JSON 文件')
+        this.$emit('show-message', 'error', '文件错误', '请选择有效的 JSON 文件')
         event.target.value = ''
       }
     },
@@ -424,14 +474,36 @@ export default {
         const reader = new FileReader()
         reader.onload = async (e) => {
           try {
-            const data = JSON.parse(e.target.result)
-            await this.taskStore.importTasks(data, this.importMode)
-            this.$emit('data-imported', { mode: this.importMode, count: data.length })
+            const fileData = JSON.parse(e.target.result)
+            let tasksData = []
+            
+            // 检测文件格式
+            if (Array.isArray(fileData)) {
+              // 直接的任务数组格式
+              tasksData = fileData
+            } else if (fileData.data && Array.isArray(fileData.data)) {
+              // 备份格式（包含data字段）
+              tasksData = fileData.data
+            } else if (fileData.tasks && Array.isArray(fileData.tasks)) {
+              // 完整导出格式（包含tasks字段）
+              tasksData = fileData.tasks
+            } else {
+              throw new Error('不支持的文件格式')
+            }
+            
+            if (tasksData.length === 0) {
+              this.$emit('show-message', 'error', '导入失败', '文件中没有找到任务数据')
+              return
+            }
+            
+            await this.taskStore.importTasks(tasksData, this.importMode === 'replace')
+            this.$emit('data-imported', { mode: this.importMode, count: tasksData.length })
             this.selectedFile = null
             this.$refs.fileInput.value = ''
+            this.$emit('show-message', 'success', '导入成功', `成功导入 ${tasksData.length} 个任务`)
           } catch (error) {
             console.error('导入数据失败:', error)
-            alert('导入失败：文件格式不正确')
+            this.$emit('show-message', 'error', '导入失败', '导入失败：' + error.message)
           } finally {
             this.isImporting = false
           }
@@ -444,9 +516,15 @@ export default {
     },
     
     async cleanupStorage() {
-      if (!confirm('确定要清理存储空间吗？这将删除一些非关键数据。')) {
-        return
-      }
+      // 使用内部确认对话框替代浏览器confirm
+      this.$emit('show-message', 'confirm', '确认清理存储', 
+        '确定要清理存储空间吗？这将删除一些非关键数据。',
+        () => this.performCleanup()
+      )
+      return
+    },
+    
+    async performCleanup() {
       
       this.isCleaning = true
       
