@@ -15,9 +15,6 @@
           </div>
           <button @click="openTaskModal()" class="add-task-btn">添加任务</button>
           <div class="data-management">
-            <button @click="exportTasks" class="export-btn">导出数据</button>
-            <input type="file" ref="importFile" @change="importTasks" accept=".json" style="display: none;">
-            <button @click="$refs.importFile.click()" class="import-btn">导入数据</button>
             <button @click="openBackupModal" class="backup-btn">备份管理</button>
           </div>
         </div>
@@ -213,56 +210,7 @@ export default {
         }
       }
     },
-    exportTasks() {
-      try {
-        const tasks = this.taskStore.getAllTasks()
-        const dataStr = JSON.stringify(tasks, null, 2)
-        const dataBlob = new Blob([dataStr], { type: 'application/json' })
-        const url = URL.createObjectURL(dataBlob)
-        const link = document.createElement('a')
-        link.href = url
-        link.download = `calendar-tasks-${dateService.formatDate(new Date())}.json`
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-        URL.revokeObjectURL(url)
-        this.showMessage('success', '导出成功', '任务数据已导出')
-      } catch (error) {
-        console.error('导出失败:', error)
-        this.showMessage('error', '导出失败', '导出任务数据失败，请重试')
-      }
-    },
-    importTasks(event) {
-      const file = event.target.files[0]
-      if (!file) return
 
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        try {
-          const tasks = JSON.parse(e.target.result)
-          if (Array.isArray(tasks)) {
-            this.showMessage('confirm', '导入确认', 
-              `将导入 ${tasks.length} 个任务，是否替换现有任务？`, 
-              () => {
-                this.taskStore.importTasks(tasks, true)
-                this.showMessage('success', '导入成功', '任务数据已导入')
-              },
-              () => {
-                this.taskStore.importTasks(tasks, false)
-                this.showMessage('success', '导入成功', '任务数据已追加')
-              }
-            )
-          } else {
-            this.showMessage('error', '导入失败', '文件格式不正确')
-          }
-        } catch (error) {
-          console.error('导入失败:', error)
-          this.showMessage('error', '导入失败', '文件解析失败，请检查文件格式')
-        }
-      }
-      reader.readAsText(file)
-      event.target.value = ''
-    },
     onSearchFocus() {
       if (this.viewMode !== 'list') {
         this.switchView('list')
@@ -340,6 +288,7 @@ export default {
   margin: 0;
   font-size: 1.8rem;
   font-weight: 600;
+  color: white;
 }
 
 
@@ -394,8 +343,6 @@ export default {
   gap: 10px;
 }
 
-.export-btn,
-.import-btn,
 .backup-btn {
   background: rgba(255, 255, 255, 0.2);
   border: none;
@@ -407,8 +354,6 @@ export default {
   transition: all 0.3s ease;
 }
 
-.export-btn:hover,
-.import-btn:hover,
 .backup-btn:hover {
   background: rgba(255, 255, 255, 0.3);
 }

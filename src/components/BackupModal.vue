@@ -393,8 +393,13 @@ export default {
       }
     },
     
-    exportTasks() {
-      this.taskStore.exportTasks()
+    async exportTasks() {
+      try {
+        await this.taskStore.exportTasks()
+      } catch (error) {
+        console.error('导出任务失败:', error)
+        alert('导出失败，请重试')
+      }
     },
     
     handleFileSelect(event) {

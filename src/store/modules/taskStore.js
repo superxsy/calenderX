@@ -114,9 +114,23 @@ export const useTaskStore = defineStore('task', {
           throw new Error('任务不存在')
         }
 
-        // 如果是重复任务且选择编辑所有
-        if (task.repeatId && editOption === 'all') {
-          // 更新所有具有相同 repeatId 的任务
+        // 检查是否从非重复任务改为重复任务
+        const wasNonRepeating = !task.repeat || task.repeat === 'none'
+        const isNowRepeating = updates.repeat && updates.repeat !== 'none'
+        
+        if (wasNonRepeating && isNowRepeating) {
+          // 删除原任务
+          const taskIndex = this.tasks.findIndex(t => t.id === taskId)
+          if (taskIndex !== -1) {
+            this.tasks.splice(taskIndex, 1)
+          }
+          
+          // 创建新的重复任务系列
+          const newTaskData = { ...task, ...updates }
+          const newTasks = await taskService.createTasksWithRepeat(newTaskData)
+          this.tasks.push(...newTasks)
+        } else if (task.repeatId && editOption === 'all') {
+          // 如果是重复任务且选择编辑所有
           const repeatTasks = this.tasks.filter(t => t.repeatId === task.repeatId)
           repeatTasks.forEach(repeatTask => {
             const index = this.tasks.findIndex(t => t.id === repeatTask.id)
@@ -265,6 +279,26 @@ export const useTaskStore = defineStore('task', {
         await this.saveTasks()
       } catch (error) {
         this.error = error.message
+        throw error
+      }
+    },
+
+    async exportTasks() {
+      try {
+        const { dateService } = await import('../../services/dateService')
+        const tasks = this.getAllTasks()
+        const dataStr = JSON.stringify(tasks, null, 2)
+        const dataBlob = new Blob([dataStr], { type: 'application/json' })
+        const url = URL.createObjectURL(dataBlob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `calendar-tasks-${dateService.formatDate(new Date())}.json`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        URL.revokeObjectURL(url)
+      } catch (error) {
+        console.error('导出任务失败:', error)
         throw error
       }
     }

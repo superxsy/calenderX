@@ -183,33 +183,10 @@ export default {
         textShadow: this.getTextShadow(backgroundColor)
       }
     },
-    // 智能文字颜色计算方法
+    // 根据背景颜色计算合适的文字颜色 - 始终返回白色字体
     getTextColor(backgroundColor) {
-      if (!backgroundColor) return '#000000'
-      
-      // 移除 # 号
-      let hex = backgroundColor.replace('#', '')
-      
-      // 处理3位十六进制颜色（如 #000 -> #000000）
-      if (hex.length === 3) {
-        hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2]
-      }
-      
-      // 确保是6位十六进制
-      if (hex.length !== 6) {
-        return '#000000' // 默认返回黑色
-      }
-      
-      // 将十六进制转换为 RGB
-      const r = parseInt(hex.substr(0, 2), 16)
-      const g = parseInt(hex.substr(2, 2), 16)
-      const b = parseInt(hex.substr(4, 2), 16)
-      
-      // 计算相对亮度 (使用 WCAG 标准)
-      const brightness = (0.299 * r + 0.587 * g + 0.114 * b)
-      
-      // 如果亮度大于 128，使用黑色文字；否则使用白色文字
-      return brightness > 128 ? '#000000' : '#ffffff'
+      // 在任何情况下都返回白色字体
+      return '#ffffff'
     },
     
     // 根据背景颜色获取合适的字体粗细
@@ -238,30 +215,10 @@ export default {
       return brightness > 128 ? '900' : '100'
     },
     
-    // 根据背景颜色获取字体大小调整
+    // 根据背景颜色获取字体大小调整 - 统一字体大小
     getFontSize(backgroundColor) {
-      if (!backgroundColor) return '1em'
-      
-      // 移除 # 号并确保是6位十六进制
-      let hex = backgroundColor.replace('#', '')
-      if (hex.length === 3) {
-        hex = hex.split('').map(char => char + char).join('')
-      }
-      
-      if (hex.length !== 6 || !/^[0-9A-Fa-f]+$/.test(hex)) {
-        return '1em'
-      }
-      
-      // 转换为 RGB
-      const r = parseInt(hex.substr(0, 2), 16)
-      const g = parseInt(hex.substr(2, 2), 16)
-      const b = parseInt(hex.substr(4, 2), 16)
-      
-      // 计算亮度
-      const brightness = (0.299 * r + 0.587 * g + 0.114 * b)
-
-      // 浅色背景稍微增大字体，深色背景保持正常
-      return brightness > 128 ? '1em' : '0.9em'
+      // 现在所有字体都是白色，统一使用标准字体大小
+      return '1em'
     },
     
     // 根据背景颜色获取文字阴影效果

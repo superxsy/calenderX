@@ -304,27 +304,10 @@ export default {
       }
     },
     
-    // 智能文字颜色计算
+    // 智能文字颜色计算 - 始终返回白色字体
     getTextColor(backgroundColor) {
-      if (!backgroundColor) return '#000000'
-      
-      let hex = backgroundColor.replace('#', '')
-      
-      if (hex.length === 3) {
-        hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2]
-      }
-      
-      if (hex.length !== 6) {
-        return '#000000'
-      }
-      
-      const r = parseInt(hex.substr(0, 2), 16)
-      const g = parseInt(hex.substr(2, 2), 16)
-      const b = parseInt(hex.substr(4, 2), 16)
-      
-      const brightness = (0.299 * r + 0.587 * g + 0.114 * b)
-      
-      return brightness > 128 ? '#000000' : '#ffffff'
+      // 在任何情况下都返回白色字体
+      return '#ffffff'
     }
   }
 }
@@ -485,7 +468,7 @@ export default {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
-  color: #333;
+  color: white;
 }
 
 .task-item.completed .task-title {
