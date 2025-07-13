@@ -373,7 +373,7 @@ export default {
 }
 
 .add-task-btn {
-  background: #4CAF50;
+  background: var(--success-color);
   border: none;
   color: white;
   padding: 10px 20px;
@@ -384,7 +384,7 @@ export default {
 }
 
 .add-task-btn:hover {
-  background: #45a049;
+  background: var(--success-color);
   transform: translateY(-1px);
 }
 
@@ -500,19 +500,19 @@ export default {
 }
 
 .message-modal-success .message-icon {
-  color: #4CAF50;
+  color: var(--success-color);
 }
 
 .message-modal-error .message-icon {
-  color: #f44336;
+  color: var(--error-color);
 }
 
 .message-modal-confirm .message-icon {
-  color: #ff9800;
+  color: var(--warning-color);
 }
 
 .message-modal-info .message-icon {
-  color: #2196F3;
+  color: var(--info-color);
 }
 
 /* 按钮样式 */
@@ -547,7 +547,7 @@ export default {
 }
 
 .btn-primary {
-  background: #007bff;
+  background: var(--primary-color);
   border: none;
   color: white;
   padding: 10px 20px;
@@ -558,32 +558,32 @@ export default {
 }
 
 .btn-primary:hover {
-  background: #0056b3;
+  background: var(--primary-color-dark);
 }
 
 .btn-success {
-  background: #28a745;
+  background: var(--success-color);
 }
 
 .btn-success:hover {
-  background: #1e7e34;
+  background: var(--success-color);
 }
 
 .btn-error {
-  background: #dc3545;
+  background: var(--error-color);
 }
 
 .btn-error:hover {
-  background: #c82333;
+  background: var(--error-color);
 }
 
 .btn-confirm {
-  background: #ffc107;
+  background: var(--warning-color);
   color: #212529;
 }
 
 .btn-confirm:hover {
-  background: #e0a800;
+  background: var(--warning-color);
 }
 
 /* 响应式设计 */
