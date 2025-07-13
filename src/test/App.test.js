@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { createPinia } from 'pinia'
 import App from '../App.vue'
 
 // 模拟fetch响应
@@ -18,8 +19,12 @@ describe('App.vue', () => {
   let wrapper
 
   beforeEach(() => {
-
-    wrapper = mount(App)
+    const pinia = createPinia()
+    wrapper = mount(App, {
+      global: {
+        plugins: [pinia]
+      }
+    })
   })
 
   const appTitle = '日历任务管理器'
@@ -52,46 +57,40 @@ describe('App.vue', () => {
   it('应该正确切换视图模式', async () => {
     const weekBtn = wrapper.findAll('.view-btn')[1]
     await weekBtn.trigger('click')
-    expect(wrapper.vm.viewMode).toBe('week')
+    expect(wrapper.vm.calendarStore.viewMode).toBe('week')
 
     const listBtn = wrapper.findAll('.view-btn')[2]
     await listBtn.trigger('click')
-    expect(wrapper.vm.viewMode).toBe('list')
+    expect(wrapper.vm.calendarStore.viewMode).toBe('list')
   })
 
   it('应该正确过滤搜索结果', async () => {
-    // 等待组件挂载完成
     await wrapper.vm.$nextTick()
-    
-    // 设置任务数据
-    wrapper.vm.tasks = mockTasks
-    
-    // 设置搜索关键词
-    wrapper.vm.searchTerm = '测试'
+
+    wrapper.vm.taskStore.tasks = mockTasks
+    wrapper.vm.taskStore.setSearchTerm('测试')
     await wrapper.vm.$nextTick()
-    
-    // 检查过滤结果
-    const filteredTasks = wrapper.vm.filteredTasks
+
+    const filteredTasks = wrapper.vm.taskStore.filteredTasks
     expect(filteredTasks).toHaveLength(1)
     expect(filteredTasks[0].title).toBe('测试任务')
   })
 
   it('应该正确显示当前日期', () => {
-    wrapper.vm.currentDate = new Date('2024-08-15')
-    const dateDisplay = wrapper.vm.currentDateDisplay
+    wrapper.vm.calendarStore.setCurrentDate('2024-08-15')
+    const dateDisplay = wrapper.vm.calendarStore.currentDateDisplay
     expect(dateDisplay).toContain('2024')
     expect(dateDisplay).toContain('8')
   })
 
   it('应该正确计算月视图天数', () => {
-    wrapper.vm.tasks = mockTasks
-    wrapper.vm.currentDate = new Date('2024-08-15')
-    wrapper.vm.renderMonthView()
-    
-    expect(wrapper.vm.monthDays).toBeDefined()
-    expect(wrapper.vm.monthDays.length).toBeGreaterThan(0)
-    // 检查8月15日的任务
-    const dayWith15 = wrapper.vm.monthDays.find(day => day.day === 15)
+    wrapper.vm.taskStore.tasks = mockTasks
+    wrapper.vm.calendarStore.setCurrentDate('2024-08-15')
+    wrapper.vm.calendarStore.renderMonthView()
+
+    expect(wrapper.vm.calendarStore.monthDays).toBeDefined()
+    expect(wrapper.vm.calendarStore.monthDays.length).toBeGreaterThan(0)
+    const dayWith15 = wrapper.vm.calendarStore.monthDays.find(day => day.day === 15)
     expect(dayWith15).toBeDefined()
     expect(dayWith15.tasks).toHaveLength(1)
   })
