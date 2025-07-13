@@ -114,6 +114,7 @@
 import { useCalendarStore } from '../store/modules/calendarStore'
 import { useTaskStore } from '../store/modules/taskStore'
 import { dateService } from '../services/dateService'
+import { styleService } from '../services/styleService'
 
 export default {
   name: 'CalendarView',
@@ -174,77 +175,7 @@ export default {
       return dateService.isToday(date)
     },
     getTaskStyle(task) {
-      const backgroundColor = task.tagColor || '#3498db'
-      return {
-        backgroundColor,
-        color: this.getTextColor(backgroundColor),
-        fontWeight: this.getFontWeight(backgroundColor),
-        fontSize: this.getFontSize(backgroundColor),
-        textShadow: this.getTextShadow(backgroundColor)
-      }
-    },
-    // 根据背景颜色计算合适的文字颜色 - 始终返回白色字体
-    getTextColor(backgroundColor) {
-      // 在任何情况下都返回白色字体
-      return '#ffffff'
-    },
-    
-    // 根据背景颜色获取合适的字体粗细
-    getFontWeight(backgroundColor) {
-      if (!backgroundColor) return 'normal'
-      
-      // 移除 # 号并确保是6位十六进制
-      let hex = backgroundColor.replace('#', '')
-      if (hex.length === 3) {
-        hex = hex.split('').map(char => char + char).join('')
-      }
-      
-      if (hex.length !== 6 || !/^[0-9A-Fa-f]+$/.test(hex)) {
-        return 'normal'
-      }
-      
-      // 转换为 RGB
-      const r = parseInt(hex.substr(0, 2), 16)
-      const g = parseInt(hex.substr(2, 2), 16)
-      const b = parseInt(hex.substr(4, 2), 16)
-      
-      // 计算亮度
-      const brightness = (0.299 * r + 0.587 * g + 0.114 * b)
-      
-      // 浅色背景使用更粗的字体，深色背景使用较细的字体
-      return brightness > 128 ? '900' : '100'
-    },
-    
-    // 根据背景颜色获取字体大小调整 - 统一字体大小
-    getFontSize(backgroundColor) {
-      // 现在所有字体都是白色，统一使用标准字体大小
-      return '1em'
-    },
-    
-    // 根据背景颜色获取文字阴影效果
-    getTextShadow(backgroundColor) {
-      if (!backgroundColor) return 'none'
-      
-      // 移除 # 号并确保是6位十六进制
-      let hex = backgroundColor.replace('#', '')
-      if (hex.length === 3) {
-        hex = hex.split('').map(char => char + char).join('')
-      }
-      
-      if (hex.length !== 6 || !/^[0-9A-Fa-f]+$/.test(hex)) {
-        return 'none'
-      }
-      
-      // 转换为 RGB
-      const r = parseInt(hex.substr(0, 2), 16)
-      const g = parseInt(hex.substr(2, 2), 16)
-      const b = parseInt(hex.substr(4, 2), 16)
-      
-      // 计算亮度
-      const brightness = (0.299 * r + 0.587 * g + 0.114 * b)
-      
-      // 浅色背景给黑字添加轻微阴影增强视觉效果
-      return brightness > 128 ? '0 0 1px rgba(0,0,0,0.3)' : 'none'
+      return styleService.getTaskStyle(task)
     }
   },
   mounted() {

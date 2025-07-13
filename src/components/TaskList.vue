@@ -137,6 +137,7 @@
 import { useTaskStore } from '../store/modules/taskStore'
 import { useCalendarStore } from '../store/modules/calendarStore'
 import { dateService } from '../services/dateService'
+import { styleService } from '../services/styleService'
 
 export default {
   name: 'TaskList',
@@ -297,17 +298,7 @@ export default {
     },
     
     getTaskTagStyle(task) {
-      const backgroundColor = task.tagColor || '#3498db'
-      return {
-        backgroundColor,
-        color: this.getTextColor(backgroundColor)
-      }
-    },
-    
-    // 智能文字颜色计算 - 始终返回白色字体
-    getTextColor(backgroundColor) {
-      // 在任何情况下都返回白色字体
-      return '#ffffff'
+      return styleService.getTaskTagStyle(task)
     }
   }
 }

@@ -7,8 +7,8 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f5f7fa;
-    color: #333;
+    background-color: var(--background-color);
+    color: var(--text-color);
     line-height: 1.6;
 }
 
@@ -31,7 +31,7 @@ body {
 }
 
 .header h1 {
-    color: #2c3e50;
+    color: var(--text-color);
     font-size: 24px;
     font-weight: 600;
 }
@@ -43,7 +43,7 @@ body {
 }
 
 .nav-btn {
-    background: #3498db;
+    background: var(--primary-color);
     color: white;
     border: none;
     width: 40px;
@@ -55,7 +55,7 @@ body {
 }
 
 .nav-btn:hover {
-    background: #2980b9;
+    background: var(--primary-color-dark);
     transform: scale(1.1);
 }
 
@@ -79,7 +79,7 @@ body {
 }
 
 .file-btn {
-    background: #34495e;
+    background: var(--primary-color-dark);
     color: white;
     border: none;
     padding: 10px 16px;
@@ -91,7 +91,7 @@ body {
 }
 
 .file-btn:hover {
-    background: #2c3e50;
+    background: var(--primary-color);
     transform: translateY(-1px);
 }
 
@@ -112,12 +112,12 @@ body {
 }
 
 .view-btn.active {
-    background: #3498db;
+    background: var(--primary-color);
     color: white;
 }
 
 .add-task-btn {
-    background: #27ae60;
+    background: var(--success-color);
     color: white;
     border: none;
     padding: 12px 24px;
@@ -128,7 +128,7 @@ body {
 }
 
 .add-task-btn:hover {
-    background: #229954;
+    background: var(--success-color);
     transform: translateY(-2px);
 }
 
@@ -139,7 +139,7 @@ body {
 }
 
 .backup-btn {
-    background: #9b59b6;
+    background: var(--info-color);
     color: white;
     border: none;
     padding: 8px 16px;
@@ -151,12 +151,12 @@ body {
 }
 
 .backup-btn:hover {
-    background: #8e44ad;
+    background: var(--info-color);
     transform: translateY(-1px);
 }
 
 .export-btn, .import-btn {
-    background: #27ae60;
+    background: var(--success-color);
     color: white;
     border: none;
     padding: 8px 16px;
@@ -167,15 +167,15 @@ body {
 }
 
 .export-btn:hover {
-    background: #229954;
+    background: var(--success-color);
 }
 
 .import-btn {
-    background: #e67e22;
+    background: var(--warning-color);
 }
 
 .import-btn:hover {
-    background: #d35400;
+    background: var(--warning-color);
 }
 
 /* 搜索栏样式 */
@@ -1020,21 +1020,21 @@ body {
 }
 
 .btn-success {
-  background: #28a745;
+  background: var(--success-color);
   color: white;
 }
 
 .btn-success:hover {
-  background: #218838;
+  background: var(--success-color);
 }
 
 .btn-error {
-  background: #dc3545;
+  background: var(--error-color);
   color: white;
 }
 
 .btn-error:hover {
-  background: #c82333;
+  background: var(--error-color);
 }
 
 .btn-confirm {
