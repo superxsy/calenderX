@@ -210,6 +210,56 @@ export default {
         }
       }
     },
+    exportTasks() {
+      try {
+        const tasks = this.taskStore.getAllTasks()
+        const dataStr = JSON.stringify(tasks, null, 2)
+        const dataBlob = new Blob([dataStr], { type: 'application/json' })
+        const url = URL.createObjectURL(dataBlob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `calendar-tasks-${dateService.formatDate(new Date())}.json`
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        URL.revokeObjectURL(url)
+        this.showMessage('success', '导出成功', '任务数据已导出')
+      } catch (error) {
+        console.error('导出失败:', error)
+        this.showMessage('error', '导出失败', '导出任务数据失败，请重试')
+      }
+    },
+    importTasks(event) {
+      const file = event.target.files[0]
+      if (!file) return
+
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        try {
+          const tasks = JSON.parse(e.target.result)
+          if (Array.isArray(tasks)) {
+            this.showMessage('confirm', '确认导入', 
+              `检测到 ${tasks.length} 个任务，是否覆盖现有任务？`,
+              () => {
+                this.taskStore.importTasks(tasks, true)
+                this.showMessage('success', '导入成功', '任务数据已导入并覆盖')
+              },
+              () => {
+                this.taskStore.importTasks(tasks, false)
+                this.showMessage('success', '导入成功', '任务数据已合并导入')
+              }
+            )
+          } else {
+            this.showMessage('error', '导入失败', '文件格式不正确')
+          }
+        } catch (error) {
+          console.error('导入失败:', error)
+          this.showMessage('error', '导入失败', '文件解析失败，请检查文件格式')
+        }
+      }
+      reader.readAsText(file)
+      event.target.value = ''
+    },
 
     onSearchFocus() {
       if (this.viewMode !== 'list') {

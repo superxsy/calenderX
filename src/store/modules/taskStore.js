@@ -7,7 +7,7 @@ export const useTaskStore = defineStore('task', {
     tasks: [],
     loading: false,
     error: null,
-    searchTerm: '',
+searchTerm: '',
     usedColors: [],
     statusSymbols: {
       pending: '⏳',
