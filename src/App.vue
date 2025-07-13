@@ -211,18 +211,6 @@ export default {
           console.error('删除任务失败:', error)
           this.showMessage('error', '删除失败', '删除任务失败，请重试')
         }
-      } else {
-        // 处理来自TaskList的删除事件（直接传递task对象）
-        const task = eventData
-        this.deleteTaskToConfirm = task
-        this.deleteOption = 'single'
-        
-        if (task.recurring) {
-          this.deleteConfirmMessage = '这是一个重复任务，您要删除所有重复任务还是仅删除当前任务？'
-        } else {
-          // 对于TaskList的删除事件，暂时保留原有逻辑
-          console.log('TaskList删除事件暂未实现')
-        }
       }
     },
     exportTasks() {
@@ -233,7 +221,7 @@ export default {
         const url = URL.createObjectURL(dataBlob)
         const link = document.createElement('a')
         link.href = url
-        link.download = `calendar-tasks-${dateService.formatDate(new Date(), 'YYYY-MM-DD')}.json`
+        link.download = `calendar-tasks-${dateService.formatDate(new Date())}.json`
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
