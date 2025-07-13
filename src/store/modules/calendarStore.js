@@ -36,7 +36,7 @@ export const useCalendarStore = defineStore('calendar', {
     },
 
     // 获取月视图的周名称
-    weekNames: () => ['日', '一', '二', '三', '四', '五', '六']
+    weekNames: () => ['一', '二', '三', '四', '五', '六', '日']
   },
 
   actions: {
@@ -84,16 +84,29 @@ export const useCalendarStore = defineStore('calendar', {
       const firstDayOfMonth = new Date(year, month, 1)
       const lastDayOfMonth = new Date(year, month + 1, 0)
       const daysInMonth = lastDayOfMonth.getDate()
-      const startDayOfWeek = firstDayOfMonth.getDay()
+      // 调整为周一开始：周日(0)变为6，周一(1)变为0，周二(2)变为1，以此类推
+      const startDayOfWeek = (firstDayOfMonth.getDay() + 6) % 7
 
       const days = []
       
-      // 添加月初的空白天数
-      for (let i = 0; i < startDayOfWeek; i++) {
-        days.push({ day: '', tasks: [], isEmpty: true })
+      // 添加上个月末尾的日期
+      const prevMonth = new Date(year, month - 1, 0)
+      const prevMonthDays = prevMonth.getDate()
+      for (let i = startDayOfWeek - 1; i >= 0; i--) {
+        const date = new Date(year, month - 1, prevMonthDays - i)
+        const dateString = this.formatDate(date)
+        const tasksForDay = taskStore.getTasksByDate(dateString)
+        
+        days.push({ 
+          date: dateString, 
+          day: prevMonthDays - i, 
+          tasks: tasksForDay,
+          isEmpty: true, // 标记为非当前月份
+          isToday: this.isToday(dateString)
+        })
       }
 
-      // 添加月份中的每一天
+      // 添加当前月份的每一天
       for (let i = 1; i <= daysInMonth; i++) {
         const date = new Date(year, month, i)
         const dateString = this.formatDate(date)
@@ -108,6 +121,28 @@ export const useCalendarStore = defineStore('calendar', {
         })
       }
 
+      // 动态计算所需的周数，确保完整显示月份
+      // 如果当前天数不足35天（5周），则使用35天
+      // 如果超过35天，则使用42天（6周）
+      const minCells = 35
+      const maxCells = 42
+      const totalCells = days.length <= minCells ? minCells : maxCells
+      const remainingCells = totalCells - days.length
+      
+      for (let i = 1; i <= remainingCells; i++) {
+        const date = new Date(year, month + 1, i)
+        const dateString = this.formatDate(date)
+        const tasksForDay = taskStore.getTasksByDate(dateString)
+        
+        days.push({ 
+          date: dateString, 
+          day: i, 
+          tasks: tasksForDay,
+          isEmpty: true, // 标记为非当前月份
+          isToday: this.isToday(dateString)
+        })
+      }
+
       this.monthDays = days
     },
 
@@ -117,7 +152,8 @@ export const useCalendarStore = defineStore('calendar', {
       const year = this.currentDate.getFullYear()
       const month = this.currentDate.getMonth()
       const day = this.currentDate.getDate()
-      const dayOfWeek = this.currentDate.getDay()
+      // 调整为周一开始：周日(0)变为6，周一(1)变为0，周二(2)变为1，以此类推
+      const dayOfWeek = (this.currentDate.getDay() + 6) % 7
 
       const week = []
       const startOfWeek = new Date(year, month, day - dayOfWeek)

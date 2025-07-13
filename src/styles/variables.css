@@ -4,8 +4,16 @@
   --success-color: #28a745;
   --error-color: #dc3545;
   --warning-color: #ffc107;
+  --warning-color-dark: #e0a800;
+  --error-color-dark: #c82333;
   --info-color: #2196f3;
   --text-color: #333;
   --muted-color: #666;
-  --background-color: #f5f7fa;
+  --background-color: white;
+  --border-color: #eee;
+  --hover-color: white;
+  --light-background: white;
+  --white-color: white;
+  --today-background: #e3f2fd;
+  --delete-hover-background: #ffebee;
 }

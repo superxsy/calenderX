@@ -87,14 +87,23 @@
             <p v-html="messageModalContent"></p>
           </div>
           <div class="modal-footer">
-            <button v-if="messageModalType === 'confirm'" type="button" @click="cancelMessageModal" class="btn-cancel">取消</button>
-            <button type="button" @click="confirmMessageModal" class="btn-primary" :class="{
-              'btn-success': messageModalType === 'success',
-              'btn-error': messageModalType === 'error',
-              'btn-confirm': messageModalType === 'confirm'
-            }">
-              {{ messageModalType === 'confirm' ? '确定' : '知道了' }}
-            </button>
+            <!-- 重复任务删除的特殊按钮布局 -->
+            <template v-if="messageModalType === 'confirm' && messageModalTitle === '删除重复任务'">
+              <button type="button" @click="closeMessageModal" class="btn-cancel">取消</button>
+              <button type="button" @click="deleteSingleTask" class="btn-single-delete">仅删除当前任务</button>
+              <button type="button" @click="deleteAllTasks" class="btn-all-delete">删除所有重复任务</button>
+            </template>
+            <!-- 普通确认对话框 -->
+            <template v-else>
+              <button v-if="messageModalType === 'confirm'" type="button" @click="cancelMessageModal" class="btn-cancel">取消</button>
+              <button type="button" @click="confirmMessageModal" class="btn-primary" :class="{
+                'btn-success': messageModalType === 'success',
+                'btn-error': messageModalType === 'error',
+                'btn-confirm': messageModalType === 'confirm'
+              }">
+                {{ messageModalType === 'confirm' ? '确定' : '知道了' }}
+              </button>
+            </template>
           </div>
         </div>
       </div>
@@ -198,9 +207,12 @@ export default {
       }
     },
     async showDeleteConfirm(eventData) {
+      let task
+      
       // 处理来自TaskModal的删除事件
       if (eventData && eventData.task) {
-        const { task, deleteOption } = eventData
+        task = eventData.task
+        const { deleteOption } = eventData
         try {
           await this.taskStore.deleteTask(task.id, deleteOption || 'single')
           this.showMessage('success', '删除成功', '任务已删除')
@@ -208,6 +220,61 @@ export default {
           console.error('删除任务失败:', error)
           this.showMessage('error', '删除失败', '删除任务失败，请重试')
         }
+        return
+      }
+      
+      // 处理来自TaskList的删除事件（直接传入task对象）
+      if (eventData && eventData.id) {
+        task = eventData
+      }
+      
+      if (!task) {
+        this.showMessage('error', '删除失败', '未找到要删除的任务')
+        return
+      }
+      
+      // 检查是否为重复任务
+      if (task.repeatId) {
+        // 重复任务，询问删除选项
+        this.showMessage('confirm', '删除重复任务', 
+          `这是一个重复任务（${this.getRepeatText(task.repeat)}），您要删除：<br/><br/>
+          <strong>仅删除当前任务</strong> - 只删除选中的这一个任务<br/>
+          <strong>删除所有重复任务</strong> - 删除整个重复任务系列`,
+          async () => {
+            // 删除所有重复任务
+            try {
+              await this.taskStore.deleteTask(task.id, 'all')
+              this.showMessage('success', '删除成功', '所有重复任务已删除')
+            } catch (error) {
+              console.error('删除任务失败:', error)
+              this.showMessage('error', '删除失败', '删除任务失败，请重试')
+            }
+          },
+          async () => {
+            // 只删除当前任务
+            try {
+              await this.taskStore.deleteTask(task.id, 'single')
+              this.showMessage('success', '删除成功', '当前任务已删除')
+            } catch (error) {
+              console.error('删除任务失败:', error)
+              this.showMessage('error', '删除失败', '删除任务失败，请重试')
+            }
+          }
+        )
+      } else {
+        // 普通任务，直接删除
+        this.showMessage('confirm', '确认删除', 
+          `确定要删除任务「${task.title}」吗？`,
+          async () => {
+            try {
+              await this.taskStore.deleteTask(task.id, 'single')
+              this.showMessage('success', '删除成功', '任务已删除')
+            } catch (error) {
+              console.error('删除任务失败:', error)
+              this.showMessage('error', '删除失败', '删除任务失败，请重试')
+            }
+          }
+        )
       }
     },
     exportTasks() {
@@ -299,6 +366,27 @@ export default {
       this.messageModalTitle = ''
       this.messageModalContent = ''
       this.messageModalCallback = null
+    },
+    getRepeatText(repeat) {
+      const repeatMap = {
+        daily: '每天',
+        weekdays: '工作日',
+        weekly: '每周',
+        monthly: '每月'
+      }
+      return repeatMap[repeat] || repeat
+    },
+    deleteSingleTask() {
+      if (this.messageModalCallback?.cancel) {
+        this.messageModalCallback.cancel()
+      }
+      this.closeMessageModal()
+    },
+    deleteAllTasks() {
+      if (this.messageModalCallback?.confirm) {
+        this.messageModalCallback.confirm()
+      }
+      this.closeMessageModal()
     }
   },
   async mounted() {
@@ -471,7 +559,7 @@ export default {
 
 .modal-header h3 {
   margin: 0;
-  color: #333;
+  color: var(--text-color);
   font-size: 1.3rem;
 }
 
@@ -532,7 +620,7 @@ export default {
 }
 
 .btn-delete {
-  background: #dc3545;
+  background: var(--error-color);
   border: none;
   color: white;
   padding: 10px 20px;
@@ -584,6 +672,36 @@ export default {
 
 .btn-confirm:hover {
   background: var(--warning-color);
+}
+
+.btn-single-delete {
+  background: var(--warning-color);
+  border: none;
+  color: #212529;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-single-delete:hover {
+  background: var(--warning-color-dark);
+}
+
+.btn-all-delete {
+  background: var(--error-color);
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-all-delete:hover {
+  background: var(--error-color-dark);
 }
 
 /* 响应式设计 */

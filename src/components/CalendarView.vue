@@ -6,6 +6,7 @@
         <button @click="navigate(-1)" class="nav-btn">&#9664;</button>
         <h2 class="current-date">{{ currentDateDisplay }}</h2>
         <button @click="navigate(1)" class="nav-btn">&#9654;</button>
+        <button @click="goToToday" class="today-btn" title="回到今天">今天</button>
       </div>
 
     </div>
@@ -14,14 +15,14 @@
     <div class="calendar-content">
       <!-- 星期标题 -->
       <div class="calendar-days-of-week" v-if="viewMode === 'month' || viewMode === 'week'">
-        <div v-for="dayName in ['日', '一', '二', '三', '四', '五', '六']" :key="dayName">{{ dayName }}</div>
+        <div v-for="dayName in ['一', '二', '三', '四', '五', '六', '日']" :key="dayName">{{ dayName }}</div>
       </div>
 
       <!-- 月视图 -->
       <div class="calendar-grid" v-if="viewMode === 'month'">
         <div 
           class="calendar-day" 
-          :class="{ 'is-empty': !day.day, 'is-today': isToday(day.date) }" 
+          :class="{ 'is-empty': day.isEmpty, 'is-today': isToday(day.date) }" 
           v-for="(day, index) in monthDays" 
           :key="index" 
           @click="day.day ? onDayClick(day.date) : null"
@@ -161,6 +162,9 @@ export default {
       this.calendarStore.switchView(view)
       this.$emit('view-change', view)
     },
+    goToToday() {
+      this.calendarStore.goToToday()
+    },
     onDayClick(date) {
       this.$emit('day-click', date)
     },
@@ -207,8 +211,8 @@ export default {
 }
 
 .nav-btn {
-  background: #3498db;
-  color: white;
+  background: var(--primary-color);
+  color: var(--white-color);
   border: none;
   padding: 8px 12px;
   border-radius: 4px;
@@ -218,13 +222,30 @@ export default {
 }
 
 .nav-btn:hover {
-  background: #2980b9;
+  background: var(--primary-color-dark);
+}
+
+.today-btn {
+  background: var(--success-color);
+  color: var(--white-color);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.today-btn:hover {
+  background: var(--success-color-dark, #27ae60);
+  transform: translateY(-1px);
 }
 
 .current-date {
   margin: 0;
   font-size: 1.5em;
-  color: #2c3e50;
+  color: var(--text-color);
   min-width: 200px;
   text-align: center;
 }
@@ -239,16 +260,16 @@ export default {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 1px;
-  background: #ddd;
+  background: var(--border-color);
   margin-bottom: 1px;
 }
 
 .calendar-days-of-week > div {
-  background: #f8f9fa;
+  background: var(--light-background);
   padding: 10px;
   text-align: center;
   font-weight: bold;
-  color: #666;
+  color: var(--muted-color);
   box-sizing: border-box;
 }
 
@@ -256,7 +277,7 @@ export default {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 1px;
-  background: #ddd;
+  background: var(--border-color);
   min-height: 400px;
 }
 
@@ -264,12 +285,12 @@ export default {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 1px;
-  background: #ddd;
+  background: var(--border-color);
   min-height: 300px;
 }
 
 .calendar-day {
-  background: white;
+  background: var(--background-color);
   padding: 8px;
   min-height: 80px;
   cursor: pointer;
@@ -280,23 +301,27 @@ export default {
 }
 
 .calendar-day:hover {
-  background: #f8f9fa;
+  background: var(--light-background);
 }
 
 .calendar-day.is-empty {
-  background: #f5f5f5;
+  background: #f8f9fa;
   cursor: default;
 }
 
+.calendar-day.is-empty .day-number {
+  color: #bdc3c7;
+}
+
 .calendar-day.is-today {
-  background: #e3f2fd;
-  border: 2px solid #2196f3;
+  background: var(--today-background);
+  border: 2px solid var(--info-color);
 }
 
 .day-number {
   font-weight: bold;
   margin-bottom: 5px;
-  color: #333;
+  color: var(--text-color);
 }
 
 .tasks {
@@ -335,18 +360,18 @@ export default {
 }
 
 .list-view {
-  background: white;
+  background: var(--background-color);
   border-radius: 8px;
   overflow: hidden;
 }
 
 .task-list-item {
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-color);
   transition: background-color 0.3s;
 }
 
 .task-list-item:hover {
-  background: #f8f9fa;
+  background: var(--light-background);
 }
 
 .task-list-item.completed {
@@ -367,7 +392,7 @@ export default {
 }
 
 .task-date {
-  color: #666;
+  color: var(--muted-color);
   font-size: 14px;
   margin-left: auto;
 }

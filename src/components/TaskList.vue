@@ -60,14 +60,6 @@
         @click="onTaskClick(task)"
       >
         <div class="task-main">
-          <input
-            type="checkbox"
-            v-model="task.completed"
-            @change="onTaskStatusChange(task)"
-            @click.stop
-            class="task-checkbox"
-          >
-          
           <div class="task-content">
             <div class="task-header">
               <span class="task-status" :title="getStatusText(task.status)">{{ statusSymbols[task.status] }}</span>
@@ -98,9 +90,6 @@
         </div>
         
         <div class="task-actions">
-          <button @click.stop="onTaskEdit(task)" class="action-btn edit-btn" title="编辑">
-            ✏️
-          </button>
           <button @click.stop="onTaskDelete(task)" class="action-btn delete-btn" title="删除">
             🗑️
           </button>
@@ -309,7 +298,7 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: white;
+  background: var(--background-color);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -331,16 +320,16 @@ export default {
 
 .filter-select {
   padding: 8px 12px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 4px;
-  background: white;
+  background: var(--background-color);
   font-size: 14px;
   cursor: pointer;
 }
 
 .filter-select:focus {
   outline: none;
-  border-color: #3498db;
+  border-color: var(--primary-color);
 }
 
 .task-stats {
@@ -348,7 +337,7 @@ export default {
   justify-content: space-around;
   padding: 12px 16px;
   background: transparent;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .stat-item {
@@ -358,7 +347,7 @@ export default {
 .stat-label {
   display: block;
   font-size: 12px;
-  color: #666;
+  color: var(--muted-color);
   margin-bottom: 2px;
 }
 
@@ -366,11 +355,11 @@ export default {
   display: block;
   font-size: 18px;
   font-weight: bold;
-  color: #333;
+  color: var(--text-color);
 }
 
 .stat-value.text-danger {
-  color: #e74c3c;
+  color: var(--error-color);
 }
 
 .task-items {
@@ -382,7 +371,7 @@ export default {
 .empty-state {
   text-align: center;
   padding: 60px 20px;
-  color: #666;
+  color: var(--muted-color);
 }
 
 .empty-icon {
@@ -400,41 +389,35 @@ export default {
   align-items: flex-start;
   padding: 12px;
   margin-bottom: 8px;
-  border: 1px solid #eee;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s;
-  background: white;
+  background: var(--background-color);
 }
 
 .task-item:hover {
-  border-color: #3498db;
+  border-color: var(--primary-color);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .task-item.completed {
   opacity: 0.7;
-  background: #f8f9fa;
+  background: var(--light-background);
 }
 
 .task-item.overdue {
-  border-left: 4px solid #e74c3c;
+  border-left: 4px solid var(--error-color);
 }
 
 .task-item.in-progress {
-  border-left: 4px solid #f39c12;
+  border-left: 4px solid var(--warning-color);
 }
 
 .task-main {
   flex: 1;
   display: flex;
   align-items: flex-start;
-  gap: 12px;
-}
-
-.task-checkbox {
-  margin-top: 2px;
-  cursor: pointer;
 }
 
 .task-content {
@@ -459,7 +442,7 @@ export default {
   margin: 0;
   font-size: 16px;
   font-weight: 600;
-  color: white;
+  color: var(--text-color);
 }
 
 .task-item.completed .task-title {
@@ -480,7 +463,7 @@ export default {
   gap: 12px;
   margin-bottom: 6px;
   font-size: 14px;
-  color: #666;
+  color: var(--muted-color);
 }
 
 .meta-icon {
@@ -490,7 +473,7 @@ export default {
 .task-description {
   margin: 0;
   font-size: 14px;
-  color: #666;
+  color: var(--muted-color);
   line-height: 1.4;
 }
 
@@ -511,15 +494,11 @@ export default {
 }
 
 .action-btn:hover {
-  background: #f0f0f0;
-}
-
-.edit-btn:hover {
-  background: #e3f2fd;
+  background: var(--hover-color);
 }
 
 .delete-btn:hover {
-  background: #ffebee;
+  background: var(--delete-hover-background);
 }
 
 .pagination {
@@ -528,23 +507,23 @@ export default {
   align-items: center;
   gap: 16px;
   padding: 16px;
-  border-top: 1px solid #eee;
-  background: #f8f9fa;
+  border-top: 1px solid var(--border-color);
+  background: var(--light-background);
 }
 
 .page-btn {
   padding: 8px 16px;
-  border: 1px solid #ddd;
-  background: white;
+  border: 1px solid var(--border-color);
+  background: var(--background-color);
   cursor: pointer;
   border-radius: 4px;
   transition: all 0.3s;
 }
 
 .page-btn:hover:not(:disabled) {
-  background: #3498db;
-  color: white;
-  border-color: #3498db;
+  background: var(--primary-color);
+  color: var(--white-color);
+  border-color: var(--primary-color);
 }
 
 .page-btn:disabled {
@@ -554,7 +533,7 @@ export default {
 
 .page-info {
   font-size: 14px;
-  color: #666;
+  color: var(--muted-color);
 }
 
 @media (max-width: 768px) {

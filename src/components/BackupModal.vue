@@ -233,6 +233,7 @@ import { useBackupStore } from '../store/modules/backupStore'
 import { useTaskStore } from '../store/modules/taskStore'
 import { storageService } from '../services/storageService'
 import { dateService } from '../services/dateService'
+import { styleService } from '../services/styleService'
 
 export default {
   name: 'BackupModal',
@@ -486,6 +487,14 @@ export default {
       } else {
         return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
       }
+    },
+    
+    getTaskStyle(task) {
+      return styleService.getTaskStyle(task)
+    },
+    
+    getTaskTagStyle(task) {
+      return styleService.getTaskTagStyle(task)
     }
   }
 }
@@ -507,7 +516,7 @@ export default {
 }
 
 .modal-content {
-  background: white;
+  background: var(--background-color);
   border-radius: 8px;
   width: 100%;
   max-width: 700px;
@@ -521,12 +530,12 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 20px 24px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .modal-header h3 {
   margin: 0;
-  color: #333;
+  color: var(--text-color);
   font-size: 1.5em;
 }
 
@@ -535,7 +544,7 @@ export default {
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: #666;
+  color: var(--muted-color);
   padding: 0;
   width: 30px;
   height: 30px;
@@ -547,7 +556,7 @@ export default {
 }
 
 .close-btn:hover {
-  background: #f0f0f0;
+  background: var(--hover-color);
 }
 
 .modal-body {
@@ -556,7 +565,7 @@ export default {
 
 .modal-footer {
   padding: 16px 24px;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--border-color);
   text-align: right;
 }
 
@@ -570,14 +579,14 @@ export default {
 
 .section h4 {
   margin: 0 0 16px 0;
-  color: #333;
+  color: var(--text-color);
   font-size: 1.2em;
   font-weight: 600;
 }
 
 .section-description {
   margin: 0 0 12px 0;
-  color: #666;
+  color: var(--muted-color);
   font-size: 14px;
   line-height: 1.4;
 }
@@ -606,10 +615,10 @@ export default {
 .backup-status {
   margin-left: 24px;
   padding: 8px 12px;
-  background: #f8f9fa;
+  background: var(--light-background);
   border-radius: 4px;
   font-size: 14px;
-  color: #666;
+  color: var(--muted-color);
 }
 
 .status-text {
@@ -618,9 +627,9 @@ export default {
 
 .form-select {
   padding: 6px 10px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 4px;
-  background: white;
+  background: var(--background-color);
   font-size: 14px;
 }
 
@@ -635,9 +644,9 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 16px;
-  border: 1px solid #eee;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
-  background: #f8f9fa;
+  background: var(--light-background);
 }
 
 .backup-info {
@@ -646,7 +655,7 @@ export default {
 
 .backup-name {
   font-weight: 600;
-  color: #333;
+  color: var(--text-color);
   margin-bottom: 4px;
 }
 
@@ -654,7 +663,7 @@ export default {
   display: flex;
   gap: 16px;
   font-size: 14px;
-  color: #666;
+  color: var(--muted-color);
 }
 
 .backup-actions {
@@ -678,14 +687,14 @@ export default {
   padding: 12px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  background: #f8f9fa;
+  background: var(--light-background);
 }
 
 .file-name {
   display: block;
   font-weight: 500;
   margin-bottom: 8px;
-  color: #333;
+  color: var(--text-color);
 }
 
 .import-options {
@@ -717,12 +726,12 @@ export default {
 }
 
 .storage-label {
-  color: #666;
+  color: var(--muted-color);
 }
 
 .storage-value {
   font-weight: 600;
-  color: #333;
+  color: var(--text-color);
 }
 
 .storage-value.text-warning {
@@ -732,7 +741,7 @@ export default {
 .storage-bar {
   width: 100%;
   height: 8px;
-  background: #eee;
+  background: var(--light-background);
   border-radius: 4px;
   overflow: hidden;
   margin: 8px 0;
@@ -781,13 +790,13 @@ export default {
 
 .page-info {
   font-size: 14px;
-  color: #666;
+  color: var(--muted-color);
 }
 
 .empty-state {
   text-align: center;
   padding: 40px 20px;
-  color: #666;
+  color: var(--muted-color);
 }
 
 .empty-state p {
@@ -816,12 +825,12 @@ export default {
 }
 
 .btn-primary {
-  background: #3498db;
+  background: var(--primary-color);
   color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #2980b9;
+  background: var(--primary-color-dark);
 }
 
 .btn-secondary {
@@ -834,7 +843,7 @@ export default {
 }
 
 .btn-danger {
-  background: #e74c3c;
+  background: var(--error-color);
   color: white;
 }
 
@@ -853,12 +862,12 @@ export default {
 
 .btn-outline {
   background: white;
-  color: #3498db;
-  border: 1px solid #3498db;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
 }
 
 .btn-outline:hover {
-  background: #3498db;
+  background: var(--primary-color);
   color: white;
 }
 

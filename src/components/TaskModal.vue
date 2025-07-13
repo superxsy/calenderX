@@ -232,6 +232,7 @@
 import { useTaskStore } from '../store/modules/taskStore'
 import { validationService } from '../services/validationService'
 import { dateService } from '../services/dateService'
+import { styleService } from '../services/styleService'
 
 export default {
   name: 'TaskModal',
@@ -263,7 +264,7 @@ export default {
         startTime: '',
         endTime: '',
         tag: '',
-        tagColor: '#3498db',
+        tagColor: getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim(),
         repeat: 'none',
         completed: false
       },
@@ -271,7 +272,7 @@ export default {
       editRepeatOption: 'single',
       deleteRepeatOption: 'single',
       showDeleteModal: false,
-      customColor: '#3498db',
+      customColor: getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim(),
       errors: {},
       presetColors: [
         '#3498db', '#e74c3c', '#2ecc71', '#f39c12',
@@ -361,7 +362,7 @@ export default {
           startTime: this.task.startTime || '',
           endTime: this.task.endTime || '',
           tag: this.task.tag || '',
-          tagColor: this.task.tagColor || '#3498db',
+          tagColor: this.task.tagColor || getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim(),
           repeat: this.task.repeat || 'none',
           completed: this.task.completed || false
         }
@@ -376,11 +377,11 @@ export default {
           startTime: '',
           endTime: '',
           tag: '',
-          tagColor: '#3498db',
+          tagColor: getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim(),
           repeat: 'none',
           completed: false
         }
-        this.customColor = '#3498db'
+        this.customColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim()
       }
       
       this.editRepeatOption = 'single'
@@ -396,7 +397,7 @@ export default {
         startTime: '',
         endTime: '',
         tag: '',
-        tagColor: '#3498db',
+        tagColor: getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim(),
         repeat: 'none',
         completed: false
       }
@@ -404,7 +405,7 @@ export default {
       this.editRepeatOption = 'single'
       this.deleteRepeatOption = 'single'
       this.showDeleteModal = false
-      this.customColor = '#3498db'
+      this.customColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim()
       this.errors = {}
     },
     
@@ -512,6 +513,14 @@ export default {
       } else {
         return 'pending'
       }
+    },
+    
+    getTaskStyle(task) {
+      return styleService.getTaskStyle(task || this.taskForm)
+    },
+    
+    getTaskTagStyle(task) {
+      return styleService.getTaskTagStyle(task || this.taskForm)
     }
   }
 }
@@ -552,7 +561,7 @@ export default {
 
 .modal-header h3 {
   margin: 0;
-  color: #333;
+  color: var(--text-color);
   font-size: 1.5em;
 }
 
@@ -561,7 +570,7 @@ export default {
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: #666;
+  color: var(--muted-color);
   padding: 0;
   width: 30px;
   height: 30px;
@@ -573,7 +582,7 @@ export default {
 }
 
 .close-btn:hover {
-  background: #f0f0f0;
+  background: var(--light-background);
 }
 
 .task-form {
@@ -595,7 +604,7 @@ export default {
   display: block;
   margin-bottom: 6px;
   font-weight: 600;
-  color: #333;
+  color: var(--text-color);
 }
 
 .form-input,
@@ -613,16 +622,16 @@ export default {
 .form-textarea:focus,
 .form-select:focus {
   outline: none;
-  border-color: #3498db;
+  border-color: var(--primary-color);
   box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
 }
 
 .form-input.error {
-  border-color: #e74c3c;
+  border-color: var(--error-color);
 }
 
 .error-text {
-  color: #e74c3c;
+  color: var(--error-color);
   font-size: 12px;
   margin-top: 4px;
   display: block;
@@ -632,7 +641,7 @@ export default {
   border: 1px solid #ddd;
   border-radius: 6px;
   padding: 16px;
-  background: #f8f9fa;
+  background: var(--light-background);
 }
 
 .color-section {
@@ -646,7 +655,7 @@ export default {
 .color-section h4 {
   margin: 0 0 8px 0;
   font-size: 14px;
-  color: #666;
+  color: var(--muted-color);
   font-weight: 600;
 }
 
@@ -671,7 +680,7 @@ export default {
 }
 
 .color-option.selected {
-  border-color: #333;
+  border-color: var(--text-color);
   transform: scale(1.1);
   box-shadow: 0 0 0 2px rgba(51, 51, 51, 0.3);
 }
@@ -715,7 +724,7 @@ export default {
 }
 
 .radio-option:hover {
-  background: #f0f0f0;
+  background: var(--light-background);
 }
 
 .radio-option input[type="radio"] {
@@ -748,12 +757,12 @@ export default {
 }
 
 .btn-primary {
-  background: #3498db;
+  background: var(--primary-color);
   color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #2980b9;
+  background: var(--primary-color-dark);
 }
 
 .btn-secondary {
@@ -766,7 +775,7 @@ export default {
 }
 
 .btn-danger {
-  background: #e74c3c;
+  background: var(--error-color);
   color: white;
 }
 
@@ -784,7 +793,7 @@ export default {
 
 .modal-body p {
   margin: 0 0 16px 0;
-  color: #333;
+  color: var(--text-color);
   line-height: 1.5;
 }
 
