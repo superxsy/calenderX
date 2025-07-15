@@ -206,10 +206,6 @@ export default {
       try {
         await authStore.logout()
         showDropdown.value = false
-        
-        // 清空任务数据
-        taskStore.tasks = []
-        
         console.log('退出登录成功')
       } catch (error) {
         console.error('退出登录失败:', error)

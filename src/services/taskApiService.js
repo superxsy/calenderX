@@ -202,10 +202,21 @@ class TaskApiService {
 
   // 转换为API格式
   convertToApiFormat(taskData) {
+    // 状态映射：前端状态 -> 后端状态
+    const statusMap = {
+      'pending': 'todo',
+      'in-progress': 'in_progress',
+      'completed': 'done',
+      'overdue': 'overdue',
+      'todo': 'todo',
+      'in_progress': 'in_progress',
+      'done': 'done'
+    }
+    
     const apiData = {
       title: taskData.title,
       task_date: taskData.date,
-      status: taskData.status || 'todo'
+      status: statusMap[taskData.status] || 'todo'
     }
     
     // 只添加非空的可选字段
@@ -234,6 +245,14 @@ class TaskApiService {
 
   // 从API格式转换
   convertFromApiFormat(apiTask) {
+    // 状态映射：后端状态 -> 前端状态
+    const statusMap = {
+      'todo': 'pending',
+      'in_progress': 'in-progress',
+      'done': 'completed',
+      'overdue': 'overdue'
+    }
+    
     return {
       id: apiTask.id,
       title: apiTask.title,
@@ -241,7 +260,7 @@ class TaskApiService {
       date: apiTask.task_date,
       startTime: apiTask.start_time,
       endTime: apiTask.end_time,
-      status: apiTask.status,
+      status: statusMap[apiTask.status] || apiTask.status,
       tag: apiTask.tag_name,
       tagColor: apiTask.tag_color,
       createdAt: apiTask.created_at,

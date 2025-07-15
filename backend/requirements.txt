@@ -2,9 +2,9 @@
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
 
-# Database and ORM
-sqlmodel==0.0.14
-sqlalchemy==2.0.23
+# Database and ORM - Updated for Python 3.13 compatibility
+sqlmodel==0.0.24
+sqlalchemy==2.0.41
 
 # Authentication and security
 passlib[bcrypt]==1.7.4

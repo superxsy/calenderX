@@ -1,4 +1,32 @@
-# 📋 CalendarX 全栈开发工作流程 (Workflow)
+# 🔄 CalendarX 全栈开发工作流程
+
+## 📋 项目概述
+
+CalendarX 是一个现代化的全栈任务管理系统，采用前后端分离架构，支持本地存储和云端同步的双模式运行。本文档描述了完整的全栈开发工作流程和最佳实践。
+
+## 🏗️ 架构概览
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   前端层        │    │   后端层        │    │   数据层        │
+│                 │    │                 │    │                 │
+│ • Vue.js 3      │◄──►│ • FastAPI       │◄──►│ • SQLite        │
+│ • Pinia Store   │    │ • SQLModel      │    │ • LocalStorage  │
+│ • 组件化设计    │    │ • JWT 认证      │    │ • JSON 备份     │
+│ • 响应式布局    │    │ • RESTful API   │    │ • 数据同步      │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+        │                        │                        │
+        └────────────────────────┼────────────────────────┘
+                                 │
+                    ┌─────────────────┐
+                    │   工具链        │
+                    │                 │
+                    │ • Vite 构建     │
+                    │ • Vitest 测试   │
+                    │ • Docker 部署   │
+                    │ • Git 版本控制  │
+                    └─────────────────┘
+```
 
 ## 🎯 项目现状分析
 
@@ -15,7 +43,88 @@
 - **状态管理**: 清晰的store模块划分
 - **服务层**: 完善的业务逻辑封装
 
+## 🚀 开发环境设置
+
+### 📦 前端环境
+
+```bash
+# 克隆项目
+git clone https://github.com/superxsy/calenderX.git
+cd calenderX
+
+# 安装前端依赖
+npm install
+
+# 启动前端开发服务器
+npm run dev
+```
+
+### 🐍 后端环境
+
+```bash
+# 进入后端目录
+cd backend
+
+# 创建虚拟环境
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate     # Windows
+
+# 安装后端依赖
+pip install -r requirements.txt
+
+# 启动后端服务器
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+### 🔧 开发工具配置
+
+```bash
+# 推荐的 VS Code 扩展
+前端开发:
+- Vue Language Features (Volar)
+- TypeScript Vue Plugin (Volar)
+- ESLint
+- Prettier
+- Auto Rename Tag
+
+后端开发:
+- Python
+- Pylance
+- Python Docstring Generator
+- REST Client
+- SQLite Viewer
+```
+
 ## 🚀 开发工作流程规划
+
+### 🎯 第一阶段：核心架构搭建 (已完成)
+- ✅ 前后端分离架构设计
+- ✅ Vue.js + Pinia 前端框架
+- ✅ FastAPI + SQLModel 后端框架
+- ✅ 模块化代码结构
+- ✅ 基础认证系统
+
+### 🔄 第二阶段：功能模块完善 (已完成)
+- ✅ 任务管理CRUD操作
+- ✅ 日历视图组件
+- ✅ 用户认证和会话管理
+- ✅ 本地存储和API双模式
+- ✅ 数据备份和恢复功能
+
+### 🚀 第三阶段：高级特性开发 (进行中)
+- 🔄 实时数据同步
+- 🔄 任务提醒功能
+- 🔄 多视图支持 (周视图、日视图)
+- 🔄 任务统计和分析
+- 🔄 协作功能 (任务分享)
+
+### 🌐 第四阶段：部署和优化 (规划中)
+- 📋 Docker容器化部署
+- 📋 CI/CD流水线
+- 📋 性能监控和优化
+- 📋 PWA支持
+- 📋 移动端适配
 
 ### Phase 1: 基础架构优化 (1-2周)
 
@@ -79,7 +188,225 @@
 - [ ] **日志管理**: 集中化日志收集和分析
 - [ ] **备份策略**: 数据备份和灾难恢复
 
+## 🔧 开发最佳实践
+
+### 📝 前端代码规范
+
+```javascript
+// 组件命名：使用PascalCase
+const TaskModal = {
+  name: 'TaskModal',
+  // ...
+}
+
+// Store模块：使用camelCase + Store后缀
+const taskStore = useTaskStore()
+const authStore = useAuthStore()
+
+// 服务层：使用camelCase + Service后缀
+import { taskService } from '@/services/taskService'
+import { authService } from '@/services/authService'
+
+// 常量命名：使用UPPER_SNAKE_CASE
+const DEFAULT_TASK_COLOR = '#3498db'
+const API_BASE_URL = 'http://localhost:8000'
+```
+
+### 🐍 后端代码规范
+
+```python
+# 模型命名：使用PascalCase
+class TaskModel(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    title: str
+    
+# 函数命名：使用snake_case
+def create_task(task_data: TaskCreate) -> TaskModel:
+    # ...
+    
+# 路由命名：使用kebab-case
+@router.post("/tasks")
+@router.get("/tasks/{task_id}")
+```
+
+### 🎨 样式规范
+
+```css
+/* 使用CSS变量 */
+:root {
+  --primary-color: #3498db;
+  --secondary-color: #2ecc71;
+  --danger-color: #e74c3c;
+}
+
+/* BEM命名规范 */
+.calendar-view__header {
+  /* ... */
+}
+
+.calendar-view__day--selected {
+  /* ... */
+}
+```
+
+### 🧪 测试策略
+
+**前端测试：**
+```bash
+# 运行所有前端测试
+npm run test
+
+# 运行特定测试文件
+npm run test -- App.test.js
+
+# 监听模式运行测试
+npm run test:watch
+
+# 生成测试覆盖率报告
+npm run test:coverage
+```
+
+**后端测试：**
+```bash
+# 进入后端目录
+cd backend
+
+# 运行所有后端测试
+pytest
+
+# 运行特定测试文件
+pytest tests/test_tasks.py
+
+# 生成测试覆盖率报告
+pytest --cov=app
+```
+
+### 📦 构建和部署
+
+**前端部署：**
+```bash
+# 构建生产版本
+npm run build
+
+# 预览构建结果
+npm run preview
+
+# 部署到GitHub Pages
+npm run deploy
+```
+
+**后端部署：**
+```bash
+# Docker构建
+cd backend
+docker build -t calendarx-backend .
+
+# Docker运行
+docker run -p 8000:8000 calendarx-backend
+
+# 使用docker-compose
+docker-compose up -d
+```
+
+## 🤝 全栈协作流程
+
+### 🔄 前后端协作模式
+
+**API优先开发：**
+1. **API设计** - 前后端共同设计API接口
+2. **Mock数据** - 前端使用Mock数据进行开发
+3. **并行开发** - 前后端同时进行功能开发
+4. **接口联调** - 完成后进行接口对接测试
+5. **集成测试** - 端到端功能测试
+
+**数据流管理：**
+```
+前端组件 → Pinia Store → Service层 → API调用 → 后端路由 → 业务逻辑 → 数据库
+    ↑                                                                    ↓
+    ←─────────────────── 响应数据流 ←─────────────────────────────────────┘
+```
+
+### 🚀 开发协作工具
+
+**版本控制：**
+- Git分支策略：main(生产) → develop(开发) → feature(功能)
+- 提交规范：feat/fix/docs/style/refactor/test/chore
+
+**API文档：**
+- FastAPI自动生成文档：http://localhost:8000/docs
+- 接口测试工具：Postman/Insomnia
+
+**数据库管理：**
+- SQLite浏览器工具
+- 数据迁移脚本
+- 备份恢复策略
+
+## 🤖 AI协作开发指南
+
+### 📝 与AI协作的最佳实践
+
+**任务描述模板：**
+```
+任务类型: [功能开发/Bug修复/代码优化/架构调整]
+涉及模块: [前端/后端/全栈]
+具体需求: [详细描述功能需求]
+技术要求: [使用的技术栈和框架]
+期望结果: [预期的实现效果]
+相关文件: [涉及的文件路径]
+```
+
+**代码审查要点：**
+- 架构设计是否合理
+- 代码风格是否一致
+- 错误处理是否完善
+- 性能是否优化
+- 安全性是否考虑
+
+### 🔍 问题排查协作
+
+**前端问题：**
+1. 提供浏览器控制台错误信息
+2. 描述用户操作步骤
+3. 提供相关组件和Store状态
+4. 检查网络请求响应
+
+**后端问题：**
+1. 提供服务器日志信息
+2. 描述API调用参数
+3. 检查数据库状态
+4. 验证认证token状态
+
+**全栈问题：**
+1. 确认前后端数据流
+2. 检查API接口一致性
+3. 验证数据同步逻辑
+4. 测试错误处理机制
+
 ## 🛠️ 技术实施建议
+
+### 🎯 优先级排序
+1. **系统稳定性** - 确保前后端核心功能正常运行
+2. **数据一致性** - 保证本地与云端数据同步可靠性
+3. **用户体验** - 提升界面交互和响应性
+4. **安全性** - 加强认证和数据保护
+5. **代码质量** - 重构和模块化优化
+6. **性能优化** - 前后端性能调优
+7. **新功能开发** - 按需求优先级添加功能
+
+### 🔄 迭代开发策略
+- **短周期迭代** (1-2周)
+- **功能驱动开发** (Feature-Driven Development)
+- **API优先设计** (API-First Design)
+- **持续集成部署** (CI/CD)
+- **用户反馈驱动** (User Feedback Driven)
+
+### 📊 质量保证
+- **代码审查** (Code Review)
+- **自动化测试** (前端Vitest + 后端pytest)
+- **API测试** (Postman/Newman)
+- **性能监控** (前后端性能指标)
+- **错误追踪** (日志系统)
+- **安全扫描** (依赖漏洞检查)
 
 ### 后端技术栈推荐
 ```

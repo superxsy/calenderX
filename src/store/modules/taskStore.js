@@ -76,7 +76,13 @@ export const useTaskStore = defineStore('task', {
           // API模式：从后端加载任务
           const result = await taskApiService.getTasks()
           if (result.success) {
-            this.tasks = result.tasks
+            // 如果是从API获取的数据，需要进行格式转换
+            if (result.source === 'api') {
+              this.tasks = result.tasks.map(task => taskApiService.convertFromApiFormat(task))
+            } else {
+              // 本地数据已经是正确格式
+              this.tasks = result.tasks
+            }
             this.updateSyncStatus()
             this.lastSyncTime = new Date().toISOString()
             
@@ -129,18 +135,49 @@ export const useTaskStore = defineStore('task', {
         let newTasks = []
         
         if (this.apiMode && authStore.isLoggedIn) {
-          // API模式：通过后端创建任务
-          const result = await taskApiService.createTask(taskData)
-          if (result.success) {
-            newTasks = [result.task]
-            this.tasks.push(result.task)
-            this.updateSyncStatus()
+          // API模式：处理重复任务
+          if (taskData.repeat && taskData.repeat !== 'none') {
+            // 重复任务：先在本地生成所有任务实例，然后逐个发送到后端
+            const localTasks = await taskService.createTasksWithRepeat(taskData)
+            const createdTasks = []
             
-            if (result.source === 'local') {
-              console.warn(result.message)
+            for (const localTask of localTasks) {
+              // 移除本地特有的字段（repeat, repeatId）
+              const { repeat, repeatId, ...apiTaskData } = localTask
+              const result = await taskApiService.createTask(apiTaskData)
+              
+              if (result.success) {
+                // 保留本地的repeat和repeatId信息
+                const taskWithRepeatInfo = {
+                  ...result.task,
+                  repeat: localTask.repeat,
+                  repeatId: localTask.repeatId
+                }
+                createdTasks.push(taskWithRepeatInfo)
+                this.tasks.push(taskWithRepeatInfo)
+              } else {
+                console.error('创建重复任务实例失败:', result.error)
+                // 如果某个实例创建失败，将其保存到本地待同步
+                this.tasks.push(localTask)
+              }
             }
+            
+            newTasks = createdTasks
+            this.updateSyncStatus()
           } else {
-            throw new Error(result.error || '创建任务失败')
+            // 单次任务：直接通过后端创建
+            const result = await taskApiService.createTask(taskData)
+            if (result.success) {
+              newTasks = [result.task]
+              this.tasks.push(result.task)
+              this.updateSyncStatus()
+              
+              if (result.source === 'local') {
+                console.warn(result.message)
+              }
+            } else {
+              throw new Error(result.error || '创建任务失败')
+            }
           }
         } else {
           // 本地模式：使用本地服务创建任务
@@ -177,19 +214,116 @@ export const useTaskStore = defineStore('task', {
 
         if (this.apiMode && authStore.isLoggedIn) {
           // API模式：通过后端更新任务
-          const result = await taskApiService.updateTask(taskId, updates)
-          if (result.success) {
-            const index = this.tasks.findIndex(t => t.id === taskId)
-            if (index !== -1) {
-              this.tasks[index] = result.task
+          // 检查是否从非重复任务改为重复任务
+          const wasNonRepeating = !task.repeat || task.repeat === 'none'
+          const isNowRepeating = updates.repeat && updates.repeat !== 'none'
+          
+          if (wasNonRepeating && isNowRepeating) {
+            // 删除原任务
+            const deleteResult = await taskApiService.deleteTask(taskId)
+            if (deleteResult.success || (deleteResult.error && deleteResult.error.includes('Task not found'))) {
+              const taskIndex = this.tasks.findIndex(t => t.id === taskId)
+              if (taskIndex !== -1) {
+                this.tasks.splice(taskIndex, 1)
+              }
             }
-            this.updateSyncStatus()
             
-            if (result.source === 'local') {
-              console.warn(result.message)
+            // 创建新的重复任务系列
+            const newTaskData = { ...task, ...updates }
+            // 移除后端不支持的字段
+            const { repeat, repeatId, ...apiTaskData } = newTaskData
+            
+            // 先在本地生成重复任务实例
+            const newTasks = await taskService.createTasksWithRepeat(newTaskData)
+            
+            // 逐个发送到后端
+            const createPromises = newTasks.map(async (newTask) => {
+              try {
+                const { repeat: taskRepeat, repeatId: taskRepeatId, ...taskForApi } = newTask
+                const result = await taskApiService.createTask(taskForApi)
+                if (result.success) {
+                  // 保留本地的重复信息
+                  return {
+                    ...result.task,
+                    repeat: taskRepeat,
+                    repeatId: taskRepeatId
+                  }
+                } else {
+                  console.error('创建重复任务失败:', result.error)
+                  // 如果创建失败，保存到本地待同步
+                  return newTask
+                }
+              } catch (error) {
+                console.error('创建重复任务异常:', error)
+                return newTask
+              }
+            })
+            
+            const createdTasks = await Promise.all(createPromises)
+            this.tasks.push(...createdTasks)
+            this.updateSyncStatus()
+          } else if (task.repeatId && editOption === 'all') {
+            // 重复任务批量编辑：找到所有相关任务并逐个更新
+            const repeatTasks = this.tasks.filter(t => t.repeatId === task.repeatId)
+            const updatePromises = []
+            
+            for (const repeatTask of repeatTasks) {
+              // 保留每个任务的特定属性（如日期、完成状态）
+              const preservedProps = {
+                date: repeatTask.date,
+                completed: repeatTask.completed,
+                status: repeatTask.status
+              }
+              const taskUpdates = { ...updates, ...preservedProps }
+              
+              updatePromises.push(
+                taskApiService.updateTask(repeatTask.id, taskUpdates).then(result => {
+                  if (result.success) {
+                    const index = this.tasks.findIndex(t => t.id === repeatTask.id)
+                    if (index !== -1) {
+                      this.tasks[index] = {
+                        ...result.task,
+                        repeat: repeatTask.repeat,
+                        repeatId: repeatTask.repeatId
+                      }
+                    }
+                    return { success: true, taskId: repeatTask.id }
+                  } else {
+                    console.error(`更新重复任务 ${repeatTask.id} 失败:`, result.error)
+                    return { success: false, taskId: repeatTask.id, error: result.error }
+                  }
+                })
+              )
             }
+            
+            const results = await Promise.all(updatePromises)
+            const failedUpdates = results.filter(r => !r.success)
+            
+            if (failedUpdates.length > 0) {
+              console.warn(`${failedUpdates.length} 个重复任务更新失败`)
+            }
+            
+            this.updateSyncStatus()
           } else {
-            throw new Error(result.error || '更新任务失败')
+            // 单个任务更新
+            const result = await taskApiService.updateTask(taskId, updates)
+            if (result.success) {
+              const index = this.tasks.findIndex(t => t.id === taskId)
+              if (index !== -1) {
+                this.tasks[index] = {
+                  ...result.task,
+                  repeat: task.repeat,
+                  repeatId: task.repeatId
+                }
+              }
+              this.updateSyncStatus()
+              
+              if (result.source === 'local') {
+                console.warn(result.message)
+              }
+            } else {
+              throw new Error(result.error || '更新任务失败')
+            }
           }
         } else {
           // 本地模式：使用本地服务更新任务
@@ -261,30 +395,64 @@ export const useTaskStore = defineStore('task', {
 
         if (this.apiMode && authStore.isLoggedIn) {
           // API模式：通过后端删除任务
-          const result = await taskApiService.deleteTask(taskId)
-          if (result.success) {
-            // 只有API删除成功后才从本地数组中删除
-            const index = this.tasks.findIndex(t => t.id === taskId)
-            if (index !== -1) {
-              this.tasks.splice(index, 1)
-            }
-            this.updateSyncStatus()
+          if (task.repeatId && deleteOption === 'all') {
+            // 删除所有重复任务
+            const repeatTasks = this.tasks.filter(t => t.repeatId === task.repeatId)
+            const deletePromises = repeatTasks.map(async (repeatTask) => {
+              try {
+                const result = await taskApiService.deleteTask(repeatTask.id)
+                if (result.success || (result.error && result.error.includes('Task not found'))) {
+                  // 删除成功或任务不存在时，从本地数组中删除
+                  const index = this.tasks.findIndex(t => t.id === repeatTask.id)
+                  if (index !== -1) {
+                    this.tasks.splice(index, 1)
+                  }
+                  return { success: true, taskId: repeatTask.id }
+                } else {
+                  console.error(`删除重复任务 ${repeatTask.id} 失败:`, result.error)
+                  return { success: false, taskId: repeatTask.id, error: result.error }
+                }
+              } catch (error) {
+                console.error(`删除重复任务 ${repeatTask.id} 异常:`, error)
+                return { success: false, taskId: repeatTask.id, error: error.message }
+              }
+            })
             
-            if (result.source === 'local') {
-              console.warn(result.message)
+            const results = await Promise.all(deletePromises)
+            const failedDeletes = results.filter(r => !r.success)
+            
+            if (failedDeletes.length > 0) {
+              console.warn(`${failedDeletes.length} 个重复任务删除失败`)
+              // 即使部分失败，也不抛出错误，让用户知道部分删除成功
             }
           } else {
-            // 如果是404错误（任务不存在），也从本地数组中删除
-            if (result.error && result.error.includes('Task not found')) {
+            // 删除单个任务
+            const result = await taskApiService.deleteTask(taskId)
+            if (result.success) {
+              // 只有API删除成功后才从本地数组中删除
               const index = this.tasks.findIndex(t => t.id === taskId)
               if (index !== -1) {
                 this.tasks.splice(index, 1)
-                console.warn('任务在服务器上不存在，已从本地删除')
+              }
+              
+              if (result.source === 'local') {
+                console.warn(result.message)
               }
             } else {
-              throw new Error(result.error || '删除任务失败')
+              // 如果是404错误（任务不存在），也从本地数组中删除
+              if (result.error && result.error.includes('Task not found')) {
+                const index = this.tasks.findIndex(t => t.id === taskId)
+                if (index !== -1) {
+                  this.tasks.splice(index, 1)
+                  console.warn('任务在服务器上不存在，已从本地删除')
+                }
+              } else {
+                throw new Error(result.error || '删除任务失败')
+              }
             }
           }
+          
+          this.updateSyncStatus()
         } else {
           // 本地模式：使用本地服务删除任务
           // 如果是重复任务且选择删除所有
@@ -470,7 +638,7 @@ export const useTaskStore = defineStore('task', {
       }
 
       try {
-        const result = await taskApiService.syncPendingChanges()
+        const result = await taskApiService.syncPendingOperations()
         if (result.success) {
           this.updateSyncStatus()
           this.lastSyncTime = new Date().toISOString()

@@ -81,6 +81,16 @@ export const useAuthStore = defineStore('auth', () => {
         // 尝试同步离线数据
         await syncOfflineData()
         
+        // 重新加载任务数据
+        const { useTaskStore } = await import('./taskStore')
+        const taskStore = useTaskStore()
+        await taskStore.loadTasks()
+        
+        // 刷新日历视图
+        const { useCalendarStore } = await import('./calendarStore')
+        const calendarStore = useCalendarStore()
+        calendarStore.renderCurrentView()
+        
         return { success: true, message: result.message }
       } else {
         error.value = result.error
@@ -169,6 +179,17 @@ export const useAuthStore = defineStore('auth', () => {
         password: '',
         confirmPassword: ''
       }
+      
+      // 清空任务数据
+      const { useTaskStore } = await import('./taskStore')
+      const taskStore = useTaskStore()
+      taskStore.tasks = []
+      taskStore.clearError()
+      
+      // 刷新日历视图
+      const { useCalendarStore } = await import('./calendarStore')
+      const calendarStore = useCalendarStore()
+      calendarStore.renderCurrentView()
       
       return result
     } catch (err) {

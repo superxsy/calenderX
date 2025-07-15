@@ -90,7 +90,7 @@ export const useCalendarStore = defineStore('calendar', {
       const days = []
       
       // 添加上个月末尾的日期
-      const prevMonth = new Date(year, month - 1, 0)
+      const prevMonth = new Date(year, month, 0)
       const prevMonthDays = prevMonth.getDate()
       for (let i = startDayOfWeek - 1; i >= 0; i--) {
         const date = new Date(year, month - 1, prevMonthDays - i)

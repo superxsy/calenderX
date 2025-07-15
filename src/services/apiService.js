@@ -79,6 +79,12 @@ class ApiService {
         throw new Error(errorData.detail || `HTTP ${response.status}: ${response.statusText}`)
       }
 
+      // 对于204状态码（无内容），直接返回null
+      if (response.status === 204) {
+        console.log('API响应: 204 No Content')
+        return null
+      }
+
       // 返回JSON数据
       const responseData = await response.json()
       console.log('API响应数据:', responseData)
