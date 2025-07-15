@@ -158,10 +158,22 @@ class TaskApiService {
 
       // 尝试通过API删除
       if (await this.checkConnection()) {
-        await apiService.delete(`/tasks/${taskId}`)
-        return {
-          success: true,
-          source: 'api'
+        try {
+          await apiService.delete(`/tasks/${taskId}`)
+          return {
+            success: true,
+            source: 'api'
+          }
+        } catch (apiError) {
+          // 如果是404错误，说明任务已经不存在
+          if (apiError.message && apiError.message.includes('Task not found')) {
+            return {
+              success: false,
+              error: 'Task not found',
+              message: '任务不存在或已被删除'
+            }
+          }
+          throw apiError
         }
       } else {
         // 离线模式，从本地删除
@@ -190,18 +202,34 @@ class TaskApiService {
 
   // 转换为API格式
   convertToApiFormat(taskData) {
-    return {
+    const apiData = {
       title: taskData.title,
-      description: taskData.description || '',
       task_date: taskData.date,
-      start_time: taskData.startTime || null,
-      end_time: taskData.endTime || null,
-      status: taskData.status || 'todo',
-      tag_name: taskData.tag || null,
-      tag_color: taskData.tagColor || null,
-      priority: taskData.priority || 'medium',
-      completed: taskData.completed || false
+      status: taskData.status || 'todo'
     }
+    
+    // 只添加非空的可选字段
+    if (taskData.description && taskData.description.trim()) {
+      apiData.description = taskData.description
+    }
+    
+    if (taskData.startTime) {
+      apiData.start_time = taskData.startTime
+    }
+    
+    if (taskData.endTime) {
+      apiData.end_time = taskData.endTime
+    }
+    
+    if (taskData.tag && taskData.tag.trim()) {
+      apiData.tag_name = taskData.tag
+    }
+    
+    if (taskData.tagColor) {
+      apiData.tag_color = taskData.tagColor
+    }
+    
+    return apiData
   }
 
   // 从API格式转换
@@ -216,8 +244,6 @@ class TaskApiService {
       status: apiTask.status,
       tag: apiTask.tag_name,
       tagColor: apiTask.tag_color,
-      priority: apiTask.priority,
-      completed: apiTask.completed,
       createdAt: apiTask.created_at,
       updatedAt: apiTask.updated_at
     }
@@ -285,6 +311,18 @@ class TaskApiService {
       pendingCount: pending.length,
       isOnline: this.isOnline
     }
+  }
+
+  // 检查是否有待同步的操作
+  hasPendingSync() {
+    const pending = JSON.parse(localStorage.getItem('sync_pending') || '[]')
+    return pending.length > 0
+  }
+
+  // 获取待同步操作数量
+  getPendingSyncCount() {
+    const pending = JSON.parse(localStorage.getItem('sync_pending') || '[]')
+    return pending.length
   }
 }
 

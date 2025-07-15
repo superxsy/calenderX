@@ -263,6 +263,7 @@ export const useTaskStore = defineStore('task', {
           // API模式：通过后端删除任务
           const result = await taskApiService.deleteTask(taskId)
           if (result.success) {
+            // 只有API删除成功后才从本地数组中删除
             const index = this.tasks.findIndex(t => t.id === taskId)
             if (index !== -1) {
               this.tasks.splice(index, 1)
@@ -273,7 +274,16 @@ export const useTaskStore = defineStore('task', {
               console.warn(result.message)
             }
           } else {
-            throw new Error(result.error || '删除任务失败')
+            // 如果是404错误（任务不存在），也从本地数组中删除
+            if (result.error && result.error.includes('Task not found')) {
+              const index = this.tasks.findIndex(t => t.id === taskId)
+              if (index !== -1) {
+                this.tasks.splice(index, 1)
+                console.warn('任务在服务器上不存在，已从本地删除')
+              }
+            } else {
+              throw new Error(result.error || '删除任务失败')
+            }
           }
         } else {
           // 本地模式：使用本地服务删除任务

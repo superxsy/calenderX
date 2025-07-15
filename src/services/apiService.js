@@ -66,6 +66,16 @@ class ApiService {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
         console.error('API错误响应:', errorData)
+        
+        // 对于422错误，显示详细的验证错误信息
+        if (response.status === 422 && errorData.detail) {
+          console.error('验证错误详情:', JSON.stringify(errorData.detail, null, 2))
+          if (Array.isArray(errorData.detail)) {
+            const errorMessages = errorData.detail.map(err => `${err.loc?.join('.')} - ${err.msg}`).join('; ')
+            throw new Error(`数据验证失败: ${errorMessages}`)
+          }
+        }
+        
         throw new Error(errorData.detail || `HTTP ${response.status}: ${response.statusText}`)
       }
 

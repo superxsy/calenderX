@@ -63,16 +63,28 @@ async def create_task(
     session: Session = Depends(get_session)
 ):
     """Create a new task for the current user"""
-    new_task = Task(
-        user_id=current_user.id,
-        **task_data.model_dump()
-    )
+    import logging
+    logger = logging.getLogger(__name__)
     
-    session.add(new_task)
-    session.commit()
-    session.refresh(new_task)
-    
-    return new_task
+    try:
+        logger.info(f"Creating task with data: {task_data.dict()}")
+        
+        new_task = Task(
+            user_id=current_user.id,
+            **task_data.dict()
+        )
+        
+        session.add(new_task)
+        session.commit()
+        session.refresh(new_task)
+        
+        logger.info(f"Task created successfully with ID: {new_task.id}")
+        return new_task
+        
+    except Exception as e:
+        logger.error(f"Error creating task: {str(e)}")
+        logger.error(f"Task data: {task_data.dict()}")
+        raise
 
 
 @router.get(
@@ -125,7 +137,7 @@ async def update_task(
         )
     
     # Update only provided fields
-    update_data = task_data.model_dump(exclude_unset=True)
+    update_data = task_data.dict(exclude_unset=True)
     for field, value in update_data.items():
         setattr(task, field, value)
     

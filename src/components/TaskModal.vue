@@ -500,7 +500,7 @@ export default {
     
     calculateTaskStatus() {
       if (this.taskForm.completed) {
-        return 'completed'
+        return 'done'
       }
       
       const today = dateService.getToday()
@@ -509,9 +509,9 @@ export default {
       if (taskDate < today) {
         return 'overdue'
       } else if (taskDate === today) {
-        return 'in-progress'
+        return 'in_progress'
       } else {
-        return 'pending'
+        return 'todo'
       }
     },
     
