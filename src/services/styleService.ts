@@ -1,5 +1,5 @@
 export const styleService = {
-  getTaskStyle(task) {
+  getTaskStyle(task: any) {
     const backgroundColor = task.tagColor || 'var(--primary-color)'
     return {
       backgroundColor,
@@ -10,7 +10,7 @@ export const styleService = {
     }
   },
 
-  getTaskTagStyle(task) {
+  getTaskTagStyle(task: any) {
     const backgroundColor = task.tagColor || 'var(--primary-color)'
     return {
       backgroundColor,
@@ -23,7 +23,7 @@ export const styleService = {
     return '#ffffff'
   },
 
-  getFontWeight(backgroundColor) {
+  getFontWeight(backgroundColor: string) {
     if (!backgroundColor) return 'normal'
     let hex = backgroundColor.replace('#', '')
     if (hex.length === 3) {
@@ -43,7 +43,7 @@ export const styleService = {
     return '1em'
   },
 
-  getTextShadow(backgroundColor) {
+  getTextShadow(backgroundColor: string) {
     if (!backgroundColor) return 'none'
     let hex = backgroundColor.replace('#', '')
     if (hex.length === 3) {

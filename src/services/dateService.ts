@@ -9,7 +9,7 @@ class DateService {
   }
 
   // 格式化日期为 YYYY-MM-DD
-  formatDate(date) {
+  formatDate(date: any) {
     if (!date) return ''
     
     const d = new Date(date)
@@ -23,7 +23,7 @@ class DateService {
   }
 
   // 格式化时间为 HH:MM
-  formatTime(date) {
+  formatTime(date: any) {
     if (!date) return ''
     
     const d = new Date(date)
@@ -36,7 +36,7 @@ class DateService {
   }
 
   // 格式化日期时间为 YYYY-MM-DD HH:MM
-  formatDateTime(date) {
+  formatDateTime(date: any) {
     if (!date) return ''
     
     const d = new Date(date)
@@ -46,7 +46,7 @@ class DateService {
   }
 
   // 格式化为中文日期显示
-  formatChineseDate(date) {
+  formatChineseDate(date: any) {
     if (!date) return ''
     
     const d = new Date(date)
@@ -60,7 +60,7 @@ class DateService {
   }
 
   // 格式化为相对时间（如：今天、昨天、明天）
-  formatRelativeDate(date) {
+  formatRelativeDate(date: any) {
     if (!date) return ''
     
     const d = new Date(date)
@@ -89,7 +89,7 @@ class DateService {
   }
 
   // 解析日期字符串
-  parseDate(dateString) {
+  parseDate(dateString: string) {
     if (!dateString) return null
     
     const date = new Date(dateString)
@@ -116,7 +116,7 @@ class DateService {
   }
 
   // 判断是否为今天
-  isToday(date) {
+  isToday(date: any) {
     if (!date) return false
     
     const d = new Date(date)
@@ -128,7 +128,7 @@ class DateService {
   }
 
   // 判断是否为过去的日期
-  isPast(date) {
+  isPast(date: any) {
     if (!date) return false
     
     const d = new Date(date)
@@ -139,7 +139,7 @@ class DateService {
   }
 
   // 判断是否为未来的日期
-  isFuture(date) {
+  isFuture(date: any) {
     if (!date) return false
     
     const d = new Date(date)
@@ -150,7 +150,7 @@ class DateService {
   }
 
   // 判断是否为工作日（周一到周五）
-  isWeekday(date) {
+  isWeekday(date: any) {
     if (!date) return false
     
     const d = new Date(date)

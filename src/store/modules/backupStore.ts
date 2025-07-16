@@ -15,7 +15,7 @@ export const useBackupStore = defineStore('backup', {
 
   getters: {
     // 格式化的备份列表
-    formattedBackups: (state) => {
+    formattedBackups: (state: any) => {
       return state.backups.map(backup => ({
         ...backup,
         formattedDate: new Date(backup.timestamp).toLocaleString('zh-CN'),
@@ -24,12 +24,12 @@ export const useBackupStore = defineStore('backup', {
     },
 
     // 最新备份信息
-    latestBackup: (state) => {
+    latestBackup: (state: any) => {
       return state.backups.length > 0 ? state.backups[0] : null
     },
 
     // 备份统计
-    backupStats: (state) => {
+    backupStats: (state: any) => {
       const totalSize = state.backups.reduce((sum, backup) => {
         return sum + (backup.data ? JSON.stringify(backup.data).length : 0)
       }, 0)
@@ -86,7 +86,7 @@ export const useBackupStore = defineStore('backup', {
     },
 
     // 恢复备份
-    async restoreBackup(backupId) {
+    async restoreBackup(backupId: string) {
       try {
         console.log('backupStore.restoreBackup 开始，backupId:', backupId)
         console.log('当前备份列表:', this.backups.map(b => ({ id: b.id, name: b.name, taskCount: b.taskCount })))
@@ -125,7 +125,7 @@ export const useBackupStore = defineStore('backup', {
     },
 
     // 删除备份
-    async deleteBackup(backupId) {
+    async deleteBackup(backupId: string) {
       try {
         const index = this.backups.findIndex(b => b.id === backupId)
         if (index !== -1) {
@@ -151,7 +151,7 @@ export const useBackupStore = defineStore('backup', {
     },
 
     // 导出备份
-    async exportBackup(backupId) {
+    async exportBackup(backupId: string) {
       try {
         const backup = this.backups.find(b => b.id === backupId)
         if (!backup) {
@@ -167,7 +167,7 @@ export const useBackupStore = defineStore('backup', {
     },
 
     // 导入备份
-    async importBackup(file) {
+    async importBackup(file: File) {
       this.loading = true
       this.error = null
       try {
@@ -191,13 +191,13 @@ export const useBackupStore = defineStore('backup', {
     },
 
     // 设置自动备份
-    setAutoBackup(enabled, interval = 60) {
+    setAutoBackup(enabled: boolean, interval: number = 60) {
       this.autoBackupEnabled = enabled
       this.autoBackupInterval = interval
     },
 
     // 设置最大备份数量
-    setMaxBackups(max) {
+    setMaxBackups(max: number) {
       this.maxBackups = max
       // 如果当前备份数量超过限制，删除多余的
       if (this.backups.length > max) {

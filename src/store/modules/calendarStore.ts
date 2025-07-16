@@ -12,7 +12,7 @@ export const useCalendarStore = defineStore('calendar', {
 
   getters: {
     // 当前日期显示格式
-    currentDateDisplay: (state) => {
+    currentDateDisplay: (state: any) => {
       return state.currentDate.toLocaleDateString('zh-CN', { 
         year: 'numeric', 
         month: 'long' 
@@ -20,16 +20,16 @@ export const useCalendarStore = defineStore('calendar', {
     },
 
     // 当前年份
-    currentYear: (state) => state.currentDate.getFullYear(),
+    currentYear: (state: any) => state.currentDate.getFullYear(),
 
     // 当前月份 (0-11)
-    currentMonth: (state) => state.currentDate.getMonth(),
+    currentMonth: (state: any) => state.currentDate.getMonth(),
 
     // 当前日期
-    currentDay: (state) => state.currentDate.getDate(),
+    currentDay: (state: any) => state.currentDate.getDate(),
 
     // 是否为今天
-    isToday: (state) => (date) => {
+    isToday: (state: any) => (date: any) => {
       const today = new Date()
       const checkDate = new Date(date)
       return today.toDateString() === checkDate.toDateString()
@@ -41,19 +41,19 @@ export const useCalendarStore = defineStore('calendar', {
 
   actions: {
     // 设置当前日期
-    setCurrentDate(date) {
+    setCurrentDate(date: any) {
       this.currentDate = new Date(date)
       this.renderCurrentView()
     },
 
     // 切换视图模式
-    switchView(mode) {
+    switchView(mode: string) {
       this.viewMode = mode
       this.renderCurrentView()
     },
 
     // 导航到上一个/下一个时间段
-    navigate(direction) {
+    navigate(direction: number) {
       const newDate = new Date(this.currentDate)
       
       if (this.viewMode === 'month') {
@@ -176,7 +176,7 @@ export const useCalendarStore = defineStore('calendar', {
     },
 
     // 格式化日期为 YYYY-MM-DD
-    formatDate(date) {
+    formatDate(date: Date) {
       const year = date.getFullYear()
       const month = String(date.getMonth() + 1).padStart(2, '0')
       const day = String(date.getDate()).padStart(2, '0')
@@ -189,7 +189,7 @@ export const useCalendarStore = defineStore('calendar', {
     },
 
     // 跳转到指定日期
-    goToDate(date) {
+    goToDate(date: any) {
       this.setCurrentDate(new Date(date))
     }
   }

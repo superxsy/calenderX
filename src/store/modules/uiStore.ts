@@ -73,29 +73,29 @@ export const useUIStore = defineStore('ui', {
 
   getters: {
     // 当前主题的预设颜色
-    currentPresetColors: (state) => {
+    currentPresetColors: (state: any) => {
       return state.theme.presetColors[state.theme.current] || state.theme.presetColors.default
     },
     
     // 是否有活跃的模态框
-    hasActiveModal: (state) => {
+    hasActiveModal: (state: any) => {
       return Object.values(state.modals).some(isOpen => isOpen)
     },
     
     // 是否正在加载
-    isLoading: (state) => {
+    isLoading: (state: any) => {
       return Object.values(state.loading).some(isLoading => isLoading)
     },
     
     // 未读通知数量
-    unreadNotifications: (state) => {
+    unreadNotifications: (state: any) => {
       return state.notifications.filter(n => !n.read).length
     }
   },
 
   actions: {
     // 模态框管理
-    openModal(modalName, data = null) {
+    openModal(modalName: string, data: any = null) {
       this.modals[modalName] = true
       
       // 特殊处理任务模态框
@@ -115,7 +115,7 @@ export const useUIStore = defineStore('ui', {
       }
     },
     
-    closeModal(modalName) {
+    closeModal(modalName: string) {
       this.modals[modalName] = false
       
       // 重置相关状态
@@ -140,7 +140,7 @@ export const useUIStore = defineStore('ui', {
     },
     
     // 消息管理
-    showMessage(title, content, type = 'info', confirmCallback = null, cancelCallback = null) {
+    showMessage(title: string, content: string, type: string = 'info', confirmCallback: (() => void) | null = null, cancelCallback: (() => void) | null = null) {
       this.message = {
         title,
         content,
@@ -176,12 +176,12 @@ export const useUIStore = defineStore('ui', {
     },
     
     // 加载状态管理
-    setLoading(type, isLoading) {
+    setLoading(type: string, isLoading: boolean) {
       this.loading[type] = isLoading
     },
     
     // 主题管理
-    setTheme(themeName) {
+    setTheme(themeName: string) {
       if (this.theme.presetColors[themeName]) {
         this.theme.current = themeName
       }
@@ -198,12 +198,12 @@ export const useUIStore = defineStore('ui', {
       }
     },
     
-    setTaskFormState(key, value) {
+    setTaskFormState(key: string, value: any) {
       this.taskForm[key] = value
     },
     
     // 通知管理
-    addNotification(notification) {
+    addNotification(notification: any) {
       const id = Date.now() + Math.random()
       this.notifications.unshift({
         id,
@@ -218,7 +218,7 @@ export const useUIStore = defineStore('ui', {
       }
     },
     
-    markNotificationAsRead(id) {
+    markNotificationAsRead(id: number) {
       const notification = this.notifications.find(n => n.id === id)
       if (notification) {
         notification.read = true
@@ -229,7 +229,7 @@ export const useUIStore = defineStore('ui', {
       this.notifications.forEach(n => n.read = true)
     },
     
-    removeNotification(id) {
+    removeNotification(id: number) {
       const index = this.notifications.findIndex(n => n.id === id)
       if (index !== -1) {
         this.notifications.splice(index, 1)
