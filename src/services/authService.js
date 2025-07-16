@@ -19,7 +19,7 @@ class AuthService {
   }
 
   // 用户注册
-  async register(userData: any) {
+  async register(userData) {
     try {
       console.log('注册请求数据:', { email: userData.email, password: '***' })
       const response = await apiService.post('/auth/register', {
@@ -44,7 +44,7 @@ class AuthService {
   }
 
   // 用户登录
-  async login(credentials: any) {
+  async login(credentials) {
     try {
       console.log('登录请求数据:', { email: credentials.email, password: '***' })
       const response = await apiService.post('/auth/login', {
@@ -145,7 +145,7 @@ class AuthService {
   }
 
   // 更新密码
-  async updatePassword(passwordData: any) {
+  async updatePassword(passwordData) {
     try {
       const response = await apiService.put('/auth/password', {
         current_password: passwordData.currentPassword,
@@ -166,7 +166,7 @@ class AuthService {
   }
 
   // 重置密码（发送重置邮件）
-  async requestPasswordReset(email: string) {
+  async requestPasswordReset(email) {
     try {
       const response = await apiService.post('/auth/password-reset', {
         email: email

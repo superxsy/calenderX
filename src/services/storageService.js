@@ -6,12 +6,12 @@ class StorageService {
   }
 
   // 获取完整的存储键名
-  getKey(key: string) {
+  getKey(key) {
     return this.prefix + key
   }
 
   // 设置存储项
-  setItem(key: string, value: any) {
+  setItem(key, value) {
     try {
       const serializedValue = JSON.stringify(value)
       this.storage.setItem(this.getKey(key), serializedValue)
@@ -38,7 +38,7 @@ class StorageService {
   }
 
   // 获取存储项
-  getItem(key: string) {
+  getItem(key) {
     try {
       const item = this.storage.getItem(this.getKey(key))
       return item ? JSON.parse(item) : null
@@ -49,7 +49,7 @@ class StorageService {
   }
 
   // 删除存储项
-  removeItem(key: string) {
+  removeItem(key) {
     try {
       this.storage.removeItem(this.getKey(key))
       return true
@@ -60,7 +60,7 @@ class StorageService {
   }
 
   // 检查存储项是否存在
-  hasItem(key: string) {
+  hasItem(key) {
     return this.storage.getItem(this.getKey(key)) !== null
   }
 

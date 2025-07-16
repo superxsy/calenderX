@@ -8,7 +8,7 @@ class ApiService {
   }
 
   // 设置认证token
-  setToken(token: string | null) {
+  setToken(token) {
     this.token = token
     // 保存到localStorage
     if (token) {
@@ -27,7 +27,7 @@ class ApiService {
   }
 
   // 通用请求方法
-  async request(endpoint: string, options: any = {}) {
+  async request(endpoint, options = {}) {
     const url = `${this.baseURL}${endpoint}`
     const token = this.getToken()
     
@@ -96,12 +96,12 @@ class ApiService {
   }
 
   // GET请求
-  async get(endpoint: string) {
+  async get(endpoint) {
     return this.request(endpoint, { method: 'GET' })
   }
 
   // POST请求
-  async post(endpoint: string, data: any) {
+  async post(endpoint, data) {
     return this.request(endpoint, {
       method: 'POST',
       body: JSON.stringify(data)
@@ -109,7 +109,7 @@ class ApiService {
   }
 
   // PUT请求
-  async put(endpoint: string, data: any) {
+  async put(endpoint, data) {
     return this.request(endpoint, {
       method: 'PUT',
       body: JSON.stringify(data)
@@ -117,7 +117,7 @@ class ApiService {
   }
 
   // DELETE请求
-  async delete(endpoint: string) {
+  async delete(endpoint) {
     return this.request(endpoint, { method: 'DELETE' })
   }
 

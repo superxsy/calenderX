@@ -228,14 +228,13 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script>
 import { useTaskStore } from '../store/modules/taskStore'
 import { validationService } from '../services/validationService'
 import { dateService } from '../services/dateService'
 import { styleService } from '../services/styleService'
 
-export default defineComponent({
+export default {
   name: 'TaskModal',
   props: {
     isVisible: {
@@ -524,7 +523,7 @@ export default defineComponent({
       return styleService.getTaskTagStyle(task || this.taskForm)
     }
   }
-})
+}
 </script>
 
 <style scoped>

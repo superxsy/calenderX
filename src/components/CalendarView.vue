@@ -111,14 +111,13 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script>
 import { useCalendarStore } from '../store/modules/calendarStore'
 import { useTaskStore } from '../store/modules/taskStore'
 import { dateService } from '../services/dateService'
 import { styleService } from '../services/styleService'
 
-export default defineComponent({
+export default {
   name: 'CalendarView',
   emits: ['task-click', 'day-click', 'task-status-change', 'view-change'],
   setup() {
@@ -187,7 +186,7 @@ export default defineComponent({
     // 初始化日历视图
     this.calendarStore.renderCurrentView()
   }
-})
+}
 </script>
 
 <style scoped>
