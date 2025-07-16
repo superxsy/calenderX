@@ -29,7 +29,7 @@ export const useTaskStore = defineStore('task', {
 
   getters: {
     // 过滤后的任务列表
-    filteredTasks: (state) => {
+    filteredTasks: (state: any) => {
       if (!state.searchTerm) {
         return state.tasks
       }
@@ -43,12 +43,12 @@ export const useTaskStore = defineStore('task', {
     },
 
     // 根据日期获取任务
-    getTasksByDate: (state) => (date) => {
+    getTasksByDate: (state: any) => (date: any) => {
       return state.tasks.filter(task => task.date === date)
     },
 
     // 获取任务统计信息
-    taskStats: (state) => {
+    taskStats: (state: any) => {
       const total = state.tasks.length
       const completed = state.tasks.filter(task => task.completed).length
       const pending = state.tasks.filter(task => task.status === 'pending').length
@@ -129,7 +129,7 @@ export const useTaskStore = defineStore('task', {
     },
 
     // 添加任务
-    async addTask(taskData) {
+    async addTask(taskData: any) {
       try {
         const authStore = useAuthStore()
         let newTasks = []
@@ -204,7 +204,7 @@ export const useTaskStore = defineStore('task', {
     },
 
     // 更新任务
-    async updateTask(taskId, updates, editOption = 'single') {
+    async updateTask(taskId: string, updates: any, editOption: string = 'single') {
       try {
         const authStore = useAuthStore()
         const task = this.tasks.find(task => task.id === taskId)
@@ -385,7 +385,7 @@ export const useTaskStore = defineStore('task', {
     },
 
     // 删除任务
-    async deleteTask(taskId, deleteOption = 'single') {
+    async deleteTask(taskId: string, deleteOption: string = 'single') {
       try {
         const authStore = useAuthStore()
         const task = this.tasks.find(task => task.id === taskId)
@@ -485,7 +485,7 @@ export const useTaskStore = defineStore('task', {
     },
 
     // 更新任务状态
-    async updateTaskStatus(task) {
+    async updateTaskStatus(task: any) {
       try {
         const updates = { 
           completed: task.completed,
@@ -505,7 +505,7 @@ export const useTaskStore = defineStore('task', {
     },
 
     // 设置搜索关键词
-    setSearchTerm(term) {
+    setSearchTerm(term: string) {
       this.searchTerm = term
     },
 
@@ -542,7 +542,7 @@ export const useTaskStore = defineStore('task', {
     },
 
     // 导入任务
-    async importTasks(importedTasks, replace = false) {
+    async importTasks(importedTasks: any[], replace: boolean = false) {
       try {
         if (replace) {
           this.tasks = [...importedTasks]
@@ -562,7 +562,7 @@ export const useTaskStore = defineStore('task', {
     },
 
     // 恢复任务（从备份）
-    async restoreTasks(restoredTasks) {
+    async restoreTasks(restoredTasks: any[]) {
       try {
         console.log('taskStore.restoreTasks 开始执行，接收到的数据:', restoredTasks)
         

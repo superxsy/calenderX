@@ -61,7 +61,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   // 用户登录
-  const login = async (credentials) => {
+  const login = async (credentials: any) => {
     try {
       isLoading.value = true
       error.value = null
@@ -106,7 +106,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   // 用户注册
-  const register = async (userData) => {
+  const register = async (userData: any) => {
     try {
       isLoading.value = true
       error.value = null
@@ -201,7 +201,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   // 更新密码
-  const updatePassword = async (passwordData) => {
+  const updatePassword = async (passwordData: any) => {
     try {
       isLoading.value = true
       error.value = null
@@ -223,7 +223,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   // 请求密码重置
-  const requestPasswordReset = async (email) => {
+  const requestPasswordReset = async (email: string) => {
     try {
       isLoading.value = true
       error.value = null
@@ -267,12 +267,12 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   // 更新登录表单
-  const updateLoginForm = (field, value) => {
+  const updateLoginForm = (field: string, value: any) => {
     loginForm.value[field] = value
   }
 
   // 更新注册表单
-  const updateRegisterForm = (field, value) => {
+  const updateRegisterForm = (field: string, value: any) => {
     registerForm.value[field] = value
   }
 
