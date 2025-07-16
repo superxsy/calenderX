@@ -158,3 +158,9 @@ vite.config.ts.timestamp-*
 *.sqlite
 *.sqlite3
 backend/calendarx.db
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
