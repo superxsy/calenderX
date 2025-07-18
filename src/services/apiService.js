@@ -3,7 +3,7 @@
 class ApiService {
   constructor() {
     // 后端API基础URL
-    this.baseURL = 'http://localhost:8000/api/v1'
+    this.baseURL = 'http://54.193.80.64:8000/api/v1'
     this.token = null
   }
 
